@@ -126,7 +126,28 @@ function startClocks() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  SAFE FETCH WITH TIMEOUT
+//  RESPONSE CACHE (prevents NASA 429 rate-limit)
+// ═══════════════════════════════════════════════════════
+const _cache = new Map(); // key -> { data, ts, ttl }
+const _CACHE_TTL = {
+    'nasa': 30 * 60 * 1000,   // 30 хв для NASA API (DEMO_KEY ліміт)
+    'default': 4 * 60 * 1000  // 4 хв для інших
+};
+
+function cacheKey(url) { return url; }
+function cacheGet(url) {
+    const k = cacheKey(url);
+    const entry = _cache.get(k);
+    if (!entry) return null;
+    const isNASA = url.includes('api.nasa.gov');
+    const ttl = isNASA ? _CACHE_TTL.nasa : _CACHE_TTL.default;
+    if (Date.now() - entry.ts > ttl) { _cache.delete(k); return null; }
+    return entry.data;
+}
+function cacheSet(url, data) { _cache.set(cacheKey(url), { data, ts: Date.now() }); }
+
+// ═══════════════════════════════════════════════════════
+//  SAFE FETCH WITH TIMEOUT + 429 CACHE FALLBACK
 // ═══════════════════════════════════════════════════════
 function fetchWithTimeout(url, ms) {
     const controller = new AbortController();
@@ -135,17 +156,38 @@ function fetchWithTimeout(url, ms) {
 }
 
 async function safeFetch(url, label) {
+    const isNASA = url.includes('api.nasa.gov');
     try {
         const r = await fetchWithTimeout(url, CONFIG.FETCH_TIMEOUT);
+        if (r.status === 429) {
+            // Rate-limited — повертаємо кешовані дані якщо є
+            console.warn(`[429 RATE LIMIT] ${label} — використовуємо кеш`);
+            const cached = cacheGet(url);
+            if (cached !== null) {
+                STATE.apiStatus[label] = 'cached';
+                return cached;
+            }
+            throw new Error('429-no-cache');
+        }
         if (!r.ok) throw new Error(r.status);
         const data = await r.json();
         STATE.apiStatus[label] = true;
+        cacheSet(url, data);
         return data;
     } catch (e) {
         const msg = e.name === 'AbortError' ? 'timeout' : e.message;
         console.warn(`[API FAIL] ${label}: ${msg}`);
         STATE.apiStatus[label] = false;
         STATE.errors.push(label + ':' + msg);
+        // При помилці спробуємо кеш для NASA
+        if (isNASA) {
+            const cached = cacheGet(url);
+            if (cached !== null) {
+                console.warn(`[CACHE FALLBACK] ${label} — дані з кешу`);
+                STATE.apiStatus[label] = 'cached';
+                return cached;
+            }
+        }
         return null;
     }
 }
@@ -965,7 +1007,15 @@ function updateInfraUI() {
         var el = document.getElementById('infra-' + c.id + '-status');
         var alive = STATE.apiStatus[c.key];
         if (alive) ok++;
-        if (el) { el.textContent = alive ? 'OK' : 'FAIL'; el.style.color = alive ? '#39ff14' : '#ff3333'; }
+        if (el) {
+            if (alive === 'cached') {
+                el.textContent = 'CACHED'; el.style.color = '#ffaa00';
+            } else if (alive) {
+                el.textContent = 'OK'; el.style.color = '#39ff14';
+            } else {
+                el.textContent = 'FAIL'; el.style.color = '#ff3333';
+            }
+        }
     });
     setText('sys-apis', ok + ' / ' + checks.length);
 }
