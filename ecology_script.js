@@ -13,6 +13,7 @@ window.onload = () => {
     initMap();
     initMiniCharts();
     loadCycle();
+    loadMapData();
     startClocks();
 };
 

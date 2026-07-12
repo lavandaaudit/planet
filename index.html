@@ -50,10 +50,10 @@
             </div>
         </header>
 
-        <!-- Main Content (3 Columns) -->
+        <!-- Main Content (2 Columns) -->
         <div class="main-content">
             
-            <!-- LEFT PANEL -->
+            <!-- LEFT PANEL (Scrollable) -->
             <aside class="panel left-panel">
                 <section class="widget">
                     <div class="widget-header">PLANET STATUS <i data-lucide="info"></i></div>
@@ -109,69 +109,10 @@
                             <div class="risk-label"><span>3 🇮🇳 Delhi, India</span> <span>Забруднення повітря <b class="c-yellow">78%</b></span></div>
                             <div class="risk-bar"><div class="fill bg-yellow" style="width:78%"></div></div>
                         </div>
-                        <div class="risk-item">
-                            <div class="risk-label"><span>4 🇯🇵 Japan</span> <span>Сейсмічна активність <b class="c-orange">72%</b></span></div>
-                            <div class="risk-bar"><div class="fill bg-orange" style="width:72%"></div></div>
-                        </div>
-                        <div class="risk-item">
-                            <div class="risk-label"><span>5 🇷🇺 Siberia, Russia</span> <span>Лісові пожежі <b class="c-orange">68%</b></span></div>
-                            <div class="risk-bar"><div class="fill bg-orange" style="width:68%"></div></div>
-                        </div>
                     </div>
                 </section>
-            </aside>
 
-            <!-- CENTER PANEL -->
-            <main class="panel center-panel">
-                <!-- Timeline -->
-                <div class="timeline-container">
-                    <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
-                    <div class="timeline-events" id="timeline-events">
-                        <!-- Populated by JS -->
-                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
-                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
-                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
-                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
-                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
-                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
-                    </div>
-                </div>
-
-                <!-- Map Controls -->
-                <div class="map-tabs">
-                    <button class="tab-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">ЗЕМЛЕТРУСИ</button>
-                    <button class="tab-btn" id="btn-fires" onclick="toggleLayer('fires')">ПОЖЕЖІ</button>
-                    <button class="tab-btn" id="btn-air" onclick="toggleLayer('air')">AQI</button>
-                    <button class="tab-btn" id="btn-clouds" onclick="toggleLayer('clouds')">ХМАРИ</button>
-                    <button class="tab-btn" id="btn-precip" onclick="toggleLayer('precip')">ОПАДИ</button>
-                    <button class="tab-btn" id="btn-pressure" onclick="toggleLayer('pressure')">ТИСК</button>
-                    <button class="tab-btn" id="btn-waves" onclick="toggleLayer('waves')">ХВИЛІ</button>
-                    <button class="tab-btn" id="btn-sst" onclick="toggleLayer('sst')">ТЕМП. ОКЕАНУ</button>
-                    <button class="tab-btn" id="btn-chloro" onclick="toggleLayer('chloro')">ХЛОРОФІЛ</button>
-                    <button class="tab-btn" id="btn-salinity" onclick="toggleLayer('salinity')">ТЕЧІЇ</button>
-                    <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
-                    <div class="tab-spacer"></div>
-                    <button class="tab-btn icon-btn"><i data-lucide="layers"></i></button>
-                </div>
-
-                <!-- Map -->
-                <div class="map-wrapper">
-                    <div id="map"></div>
-                    <!-- Legend Overlay -->
-                    <div class="map-legend">
-                        <span>ЛЕГЕНДА</span>
-                        <div class="legend-item"><div class="dot bg-green"></div> НИЗЬКИЙ</div>
-                        <div class="legend-item"><div class="dot bg-yellow"></div> ПОМІРНИЙ</div>
-                        <div class="legend-item"><div class="dot bg-orange"></div> ВИСОКИЙ</div>
-                        <div class="legend-item"><div class="dot bg-red"></div> КРИТИЧНИЙ</div>
-                        <div class="legend-spacer"></div>
-                        <div class="legend-item"><div class="dot blinking bg-green"></div> ДАНІ В РЕАЛЬНОМУ ЧАСІ</div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- RIGHT PANEL -->
-            <aside class="panel right-panel">
+                <!-- Former Right Panel Widgets -->
                 <section class="widget">
                     <div class="widget-header">SPACE WEATHER <i data-lucide="info"></i> <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
                     <div class="space-grid" id="space-grid">
@@ -241,24 +182,11 @@
                             <div class="p-left"><i data-lucide="sun" class="c-green"></i> Сонячна буря</div>
                             <div class="p-right c-green">НИЗЬКА ↓</div>
                         </li>
-                        <li>
-                            <div class="p-left"><i data-lucide="waves" class="c-orange"></i> Ризик повеней</div>
-                            <div class="p-right c-orange">СЕРЕДНІЙ ↗</div>
-                        </li>
-                        <li>
-                            <div class="p-left"><i data-lucide="cloud-lightning" class="c-yellow"></i> Штормова активність</div>
-                            <div class="p-right c-yellow">СЕРЕДНЯ —</div>
-                        </li>
                     </ul>
                 </section>
-            </aside>
-        </div>
 
-        <!-- Bottom Panel -->
-        <footer class="bottom-panel">
-            <div class="bottom-row">
-                <!-- Live Feeds & Trends -->
-                <div class="panel feeds-panel">
+                <!-- Former Bottom Panel Widgets -->
+                <section class="widget feeds-panel">
                     <div class="widget-header">LIVE FEEDS & TRENDS <i data-lucide="info"></i></div>
                     <div class="mini-charts-grid">
                         <div class="m-chart">
@@ -280,29 +208,27 @@
                             <div class="canvas-wrap"><canvas id="chart-aqi"></canvas></div>
                         </div>
                         <div class="m-chart">
-                            <div class="mc-head"><span>СОНЯЧНА АКТИВНІСТЬ</span> <span class="mc-time">72 години</span></div>
+                            <div class="mc-head"><span>СОНЯЧНА АКТИВНІСТЬ</span></div>
                             <div class="mc-val c-yellow">M1.2</div>
                             <div class="mc-sub">помірна</div>
                             <div class="canvas-wrap"><canvas id="chart-solar"></canvas></div>
                         </div>
                         <div class="m-chart">
-                            <div class="mc-head"><span>ГЛОБ. ТЕМПЕРАТУРА</span> <span class="mc-time">30 днів</span></div>
+                            <div class="mc-head"><span>ГЛОБ. ТЕМПЕРАТУРА</span></div>
                             <div class="mc-val c-red">+0.62°C</div>
                             <div class="mc-sub">вище норми</div>
                             <div class="canvas-wrap"><canvas id="chart-temp"></canvas></div>
                         </div>
                         <div class="m-chart">
-                            <div class="mc-head"><span>CO2 КОНЦЕНТРАЦІЯ</span> <span class="mc-time">рік</span></div>
+                            <div class="mc-head"><span>CO2 КОНЦЕНТРАЦІЯ</span></div>
                             <div class="mc-val c-green">421.3 ppm</div>
                             <div class="mc-sub">підвищена</div>
                             <div class="canvas-wrap"><canvas id="chart-co2"></canvas></div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="bottom-row split">
-                <div class="panel bot-widget">
+                </section>
+                
+                <section class="widget bot-widget">
                     <div class="widget-header">CLIMATE MONITORING <i data-lucide="info"></i></div>
                     <div class="climate-grid">
                         <div class="cl-item">
@@ -324,40 +250,26 @@
                             <div class="cl-unit">вище норми</div>
                         </div>
                         <div class="cl-item">
-                            <div class="cl-lbl">Морський лід</div>
-                            <div class="cl-icon"><i data-lucide="snowflake" class="c-cyan"></i></div>
-                            <div class="cl-val c-cyan">-12.4%</div>
-                            <div class="cl-unit">від норми</div>
-                        </div>
-                        <div class="cl-item">
                             <div class="cl-lbl">Рівень моря</div>
                             <div class="cl-icon"><i data-lucide="waves" class="c-blue"></i></div>
                             <div class="cl-val c-blue">+3.2 mm</div>
-                            <div class="cl-unit">за 7 днів</div>
+                            <div class="cl-unit">за 7 дн</div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="panel bot-widget">
+                <section class="widget bot-widget">
                     <div class="widget-header">INFRASTRUCTURE MONITORING <i data-lucide="info"></i></div>
                     <div class="infra-grid">
                         <div class="in-item"><i data-lucide="wifi" class="c-green"></i> <div><span>Інтернет</span><br><b class="c-green">Стабільний</b></div></div>
                         <div class="in-item"><i data-lucide="satellite" class="c-green"></i> <div><span>GPS</span><br><b class="c-green">Норма</b></div></div>
-                        <div class="in-item"><i data-lucide="zap" class="c-green"></i> <div><span>Енергомережі</span><br><b class="c-green">Стабільно</b></div></div>
+                        <div class="in-item"><i data-lucide="zap" class="c-green"></i> <div><span>Мережі</span><br><b class="c-green">Стабільно</b></div></div>
                         <div class="in-item"><i data-lucide="plane" class="c-green"></i> <div><span>Авіація</span><br><b class="c-green">Норма</b></div></div>
-                        <div class="in-item"><i data-lucide="server" class="c-red"></i> <div><span>BGP</span><br><b class="c-red">2 попередження</b></div></div>
+                        <div class="in-item"><i data-lucide="server" class="c-red"></i> <div><span>BGP</span><br><b class="c-red">2 Alert</b></div></div>
                     </div>
-                </div>
+                </section>
 
-                <div class="panel bot-widget">
-                    <div class="widget-header">DATA SOURCES (100+ API)</div>
-                    <div class="sources-logos">
-                        <span>USGS</span> <span>NASA</span> <span>NOAA</span> <span>ESA</span> <span>Copernicus</span> <span>ECMWF</span> <span>OpenAQ</span> <span>FIRMS</span> <span>Windy</span>
-                    </div>
-                    <div class="sources-more">AND 80+ MORE</div>
-                </div>
-
-                <div class="panel bot-widget sys-widget">
+                <section class="widget bot-widget sys-widget">
                     <div class="widget-header">СИСТЕМА</div>
                     <div class="sys-list">
                         <div class="sys-row"><span>Статус</span> <b class="c-green">АКТИВНА</b></div>
@@ -365,9 +277,60 @@
                         <div class="sys-row"><span>API з'єднань</span> <b>112 / 120</b></div>
                         <div class="sys-row"><span>Онлайн сенсорів</span> <b class="c-green">98%</b></div>
                     </div>
+                </section>
+
+            </aside>
+
+            <!-- CENTER PANEL (Map & Timeline) -->
+            <main class="panel center-panel">
+                <!-- Timeline -->
+                <div class="timeline-container">
+                    <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
+                    <div class="timeline-events" id="timeline-events">
+                        <!-- Populated by JS -->
+                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
+                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
+                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
+                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
+                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
+                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
+                    </div>
                 </div>
-            </div>
-        </footer>
+
+                <!-- Map Controls -->
+                <div class="map-tabs">
+                    <button class="tab-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">ЗЕМЛЕТРУСИ</button>
+                    <button class="tab-btn" id="btn-fires" onclick="toggleLayer('fires')">ПОЖЕЖІ</button>
+                    <button class="tab-btn" id="btn-air" onclick="toggleLayer('air')">AQI</button>
+                    <button class="tab-btn" id="btn-clouds" onclick="toggleLayer('clouds')">ХМАРИ</button>
+                    <button class="tab-btn" id="btn-precip" onclick="toggleLayer('precip')">ОПАДИ</button>
+                    <button class="tab-btn" id="btn-pressure" onclick="toggleLayer('pressure')">ТИСК</button>
+                    <button class="tab-btn" id="btn-waves" onclick="toggleLayer('waves')">ХВИЛІ</button>
+                    <button class="tab-btn" id="btn-sst" onclick="toggleLayer('sst')">ТЕМП. ОКЕАНУ</button>
+                    <button class="tab-btn" id="btn-chloro" onclick="toggleLayer('chloro')">ХЛОРОФІЛ</button>
+                    <button class="tab-btn" id="btn-salinity" onclick="toggleLayer('salinity')">ТЕЧІЇ</button>
+                    <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
+                    <div class="tab-spacer"></div>
+                    <button class="tab-btn icon-btn"><i data-lucide="layers"></i></button>
+                </div>
+
+                <!-- Map -->
+                <div class="map-wrapper">
+                    <div id="map"></div>
+                    <!-- Legend Overlay -->
+                    <div class="map-legend">
+                        <span>ЛЕГЕНДА</span>
+                        <div class="legend-item"><div class="dot bg-green"></div> НИЗЬКИЙ</div>
+                        <div class="legend-item"><div class="dot bg-yellow"></div> ПОМІРНИЙ</div>
+                        <div class="legend-item"><div class="dot bg-orange"></div> ВИСОКИЙ</div>
+                        <div class="legend-item"><div class="dot bg-red"></div> КРИТИЧНИЙ</div>
+                        <div class="legend-spacer"></div>
+                        <div class="legend-item"><div class="dot blinking bg-green"></div> ДАНІ В РЕАЛЬНОМУ ЧАСІ</div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
     </div>
 
     <!-- Scripts -->
