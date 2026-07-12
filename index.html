@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>IBONARIUM // V4.0 PRO ECOLOGY RADAR</title>
+    <title>IBONARIUM // V4.1 PRO ECOLOGY RADAR</title>
     <meta name="description" content="Глобальний центр екологічного моніторингу в реальному часі.">
     <meta name="theme-color" content="#05070a">
 
@@ -24,7 +24,7 @@
     <div class="dashboard">
         <header class="top-bar">
             <div class="logo-area">
-                <h1>IBONARIUM <span class="badge">V4.0 PRO</span></h1>
+                <h1>IBONARIUM <span class="badge">V4.1 PRO</span></h1>
                 <div class="subtitle">ADVANCED ECOLOGICAL ANALYTICS</div>
             </div>
             <div class="header-center">
@@ -94,7 +94,7 @@
 
                 <!-- SPACE WEATHER -->
                 <section class="widget">
-                    <div class="widget-header">SPACE WEATHER</div>
+                    <div class="widget-header">SPACE WEATHER (NOAA SWPC)</div>
                     <div class="space-grid" id="space-grid">
                         <div class="space-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
@@ -131,6 +131,14 @@
                     </div>
                 </section>
 
+                <!-- NEW: SOLAR ACTIVITY (NASA DONKI) -->
+                <section class="widget">
+                    <div class="widget-header">SOLAR ACTIVITY <span style="color:#666;font-size:8px;">NASA DONKI</span></div>
+                    <div class="donki-grid" id="donki-data">
+                        <div style="color:#666;padding:4px;font-size:10px;">Завантаження...</div>
+                    </div>
+                </section>
+
                 <!-- AI SUMMARY -->
                 <section class="widget">
                     <div class="widget-header">PLANET SUMMARY (LIVE DATA)</div>
@@ -145,6 +153,37 @@
                     <ul class="prediction-list" id="prediction-list">
                         <li style="color:#666;font-size:12px;">Обчислення на основі поточних даних...</li>
                     </ul>
+                </section>
+
+                <!-- NEW: GLOBAL WEATHER (Open-Meteo) -->
+                <section class="widget">
+                    <div class="widget-header">GLOBAL WEATHER <span style="color:#666;font-size:8px;">OPEN-METEO</span></div>
+                    <div class="weather-grid" id="weather-data">
+                        <div style="color:#666;padding:4px;font-size:10px;">Завантаження...</div>
+                    </div>
+                </section>
+
+                <!-- NEW: WATER MONITORING -->
+                <section class="widget">
+                    <div class="widget-header">WATER MONITORING <span style="color:#666;font-size:8px;">USGS + NOAA</span></div>
+                    <div class="water-grid" id="water-data">
+                        <div style="color:#666;padding:4px;font-size:10px;">Завантаження...</div>
+                    </div>
+                </section>
+
+                <!-- NEW: NASA APOD (Space Photo) -->
+                <section class="widget" id="apod-container" style="display:none;">
+                    <div class="widget-header">SPACE PHOTO <span style="color:#666;font-size:8px;">NASA APOD</span></div>
+                    <div class="apod-widget">
+                        <div class="apod-img-wrap">
+                            <img id="apod-img" src="" alt="" style="cursor:pointer;">
+                        </div>
+                        <div class="apod-info">
+                            <div class="apod-title" id="apod-title">--</div>
+                            <div class="apod-date" id="apod-date">--</div>
+                            <div class="apod-desc" id="apod-desc"></div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- LIVE FEEDS & TRENDS -->
@@ -187,6 +226,12 @@
                             <div class="mc-sub" id="ch-storm-sub">--</div>
                             <div class="canvas-wrap"><canvas id="chart-storm" width="300" height="30"></canvas></div>
                         </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>CME ШВИДКІСТЬ</span> <span class="mc-time">DONKI</span></div>
+                            <div class="mc-val c-cyan" id="ch-cme-val">--</div>
+                            <div class="mc-sub" id="ch-cme-sub">--</div>
+                            <div class="canvas-wrap"><canvas id="chart-cme" width="300" height="30"></canvas></div>
+                        </div>
                     </div>
                 </section>
 
@@ -226,10 +271,15 @@
                     <div class="widget-header">API CONNECTIVITY</div>
                     <div class="infra-grid" id="infra-grid">
                         <div class="in-item" id="infra-usgs"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg> <div><span>USGS Earthquakes</span><br><b id="infra-usgs-status" style="color:#666">Перевірка...</b></div></div>
-                        <div class="in-item" id="infra-noaa"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg> <div><span>NOAA Space</span><br><b id="infra-noaa-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-noaa"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg> <div><span>NOAA Space Weather</span><br><b id="infra-noaa-status" style="color:#666">Перевірка...</b></div></div>
                         <div class="in-item" id="infra-eonet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg> <div><span>NASA EONET</span><br><b id="infra-eonet-status" style="color:#666">Перевірка...</b></div></div>
-                        <div class="in-item" id="infra-meteo"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg> <div><span>Open-Meteo</span><br><b id="infra-meteo-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-meteo"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg> <div><span>Open-Meteo AQ</span><br><b id="infra-meteo-status" style="color:#666">Перевірка...</b></div></div>
                         <div class="in-item" id="infra-noaa-gml"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"></path></svg> <div><span>NOAA GML (CO2)</span><br><b id="infra-noaa-gml-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-donki"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg> <div><span>NASA DONKI (CME)</span><br><b id="infra-donki-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-tides"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg> <div><span>NOAA Tides</span><br><b id="infra-tides-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-weather"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg> <div><span>Open-Meteo Weather</span><br><b id="infra-weather-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-usgs-water"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path><path d="M12.56 14.1c1.46 0 2.64-1.21 2.64-2.7 0-.77-.37-1.5-1.13-2.11S12.78 8.05 12.56 7.1c-.22.95-.86 1.87-1.51 2.47S9 10.63 9 11.4c0 1.49 1.18 2.7 2.56 2.7z"></path></svg> <div><span>USGS Water (Rivers)</span><br><b id="infra-usgs-water-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-apod"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path></svg> <div><span>NASA APOD</span><br><b id="infra-apod-status" style="color:#666">Перевірка...</b></div></div>
                     </div>
                 </section>
 
@@ -262,6 +312,7 @@
                     <button class="tab-btn" id="btn-chloro" onclick="toggleLayer('chloro')">ХЛОРОФІЛ</button>
                     <button class="tab-btn" id="btn-salinity" onclick="toggleLayer('salinity')">ТЕЧІЇ</button>
                     <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
+                    <button class="tab-btn" id="btn-rivers" onclick="toggleLayer('rivers')">РІЧКИ</button>
                 </div>
 
                 <div class="map-wrapper">

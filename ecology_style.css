@@ -248,6 +248,39 @@ body {
 .sys-row { display: flex; justify-content: space-between; }
 .sys-row span { color: var(--text-muted); }
 
+/* NEW: DONKI Solar Activity Widget */
+.donki-grid { display: flex; flex-direction: column; gap: 3px; }
+.donki-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.donki-row:last-child { border-bottom: none; }
+.donki-label { font-size: 9px; color: var(--text-muted); }
+.donki-val { font-size: 10px; font-weight: 600; font-family: var(--font-mono); }
+
+/* NEW: Global Weather Widget */
+.weather-grid { display: flex; flex-direction: column; gap: 6px; }
+.weather-city { background: rgba(0,0,0,0.2); padding: 5px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.03); }
+.wc-head { font-size: 10px; color: var(--accent-cyan); margin-bottom: 3px; letter-spacing: 0.5px; }
+.wc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.wc-temp { font-size: 16px; font-weight: 700; font-family: var(--font-mono); }
+.wc-detail { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* NEW: Water Monitoring Widget */
+.water-grid { display: flex; flex-direction: column; gap: 3px; }
+.water-section-label { font-size: 8px; color: var(--accent-cyan); letter-spacing: 1px; margin: 4px 0 2px 0; text-transform: uppercase; }
+.water-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.water-row:last-child { border-bottom: none; }
+.wr-name { font-size: 9px; color: var(--text-muted); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wr-val { font-size: 10px; font-weight: 600; font-family: var(--font-mono); }
+
+/* NEW: NASA APOD Widget */
+.apod-widget { display: flex; gap: 8px; }
+.apod-img-wrap { width: 100px; height: 70px; flex-shrink: 0; overflow: hidden; border-radius: 4px; background: rgba(0,0,0,0.3); }
+.apod-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.apod-img-wrap img:hover { transform: scale(1.05); }
+.apod-info { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+.apod-title { font-size: 11px; font-weight: 600; color: #fff; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.apod-date { font-size: 8px; color: var(--accent-cyan); font-family: var(--font-mono); }
+.apod-desc { font-size: 8px; color: var(--text-muted); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
 /* Custom Leaflet Popups */
 .leaflet-popup-content-wrapper { background: rgba(10, 15, 25, 0.9); color: var(--text-main); border: 1px solid var(--panel-border); border-radius: 4px; font-family: var(--font-mono); }
 .leaflet-popup-tip { background: rgba(10, 15, 25, 0.9); }
