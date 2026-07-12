@@ -2,7 +2,8 @@ const STATE = {
     map: null,
     layers: {},
     activeStates: {
-        quakes: true, fires: false, air: false, temp: false, ozone: false, rad: false, wind: false
+        quakes: true, fires: false, air: false, temp: false, ozone: false, rad: false, wind: false,
+        clouds: false, precip: false, pressure: false, waves: false, sst: false, chloro: false, salinity: false
     },
     charts: {}
 };
@@ -193,6 +194,80 @@ function setupRadiation() {
 }
 function setupOzone() { /* ... */ }
 function setupWind() { /* ... */ }
+
+function loadMapData() {
+    // Add Air Quality Layer
+    STATE.layers.air = L.tileLayer('https://tiles.aqicn.org/tiles/usepa-aqi/{z}/{x}/{y}.png?token=9c118126bb63a15998f5a5e3cc9cfa88');
+
+    // Add New Planet Radar Layers (OpenWeatherMap)
+    const owmKey = 'b99fdb51e2dcc8e0549f8b99ef20cedd';
+    STATE.layers.clouds = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${owmKey}`);
+    STATE.layers.precip = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmKey}`);
+    STATE.layers.pressure = L.tileLayer(`https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${owmKey}`);
+
+    // Add New Ocean Radar Layers (NASA GIBS)
+    STATE.layers.sst = L.tileLayer.wms('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi', {
+        layers: 'GHRSST_L4_MUR_Sea_Surface_Temperature', format: 'image/png', transparent: true, opacity: 0.6
+    });
+    STATE.layers.chloro = L.tileLayer.wms('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi', {
+        layers: 'MODIS_Aqua_L2_Chlorophyll_A', format: 'image/png', transparent: true, opacity: 0.6
+    });
+
+    // Waves (Using mock for now or fetch open-meteo like ocean radar)
+    setupWaves();
+    setupSalinity();
+
+    // Set Default Active Layers
+    if (STATE.activeStates.quakes) STATE.layers.quakes.addTo(STATE.map);
+}
+
+// Ocean Logic
+async function setupWaves() {
+    const buoys = [
+        { name: "N. Atlantic", lat: 50, lon: -30 }, { name: "Hawaii", lat: 21, lon: -157 },
+        { name: "Southern", lat: -55, lon: 120 }, { name: "Cape G. Hope", lat: -35, lon: 18 },
+        { name: "Bering", lat: 58, lon: -175 }, { name: "Gulf Mex", lat: 25, lon: -90 },
+        { name: "Japan", lat: 35, lon: 140 }, { name: "Peru", lat: -15, lon: -80 }
+    ];
+    const markers = [];
+    const promises = buoys.map(async b => {
+        try {
+            const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${b.lat}&longitude=${b.lon}&current=wave_height,wave_period&timezone=auto`);
+            const data = await res.json();
+            return { ...b, data };
+        } catch (e) { return null; }
+    });
+    try {
+        const results = await Promise.all(promises);
+        results.forEach(res => {
+            if (!res || !res.data || !res.data.current) return;
+            const h = res.data.current.wave_height;
+            let color = '#00f3ff';
+            if (h > 3) color = '#ffaa00';
+            if (h > 6) color = '#ff3333';
+            markers.push(L.circleMarker([res.lat, res.lon], { radius: 5 + (h || 0), fillColor: color, color: '#fff', weight: 1, fillOpacity: 0.7 }).bindPopup(`<b>🌊 ${res.name}</b><br>Wave: <b>${h} m</b>`));
+        });
+        STATE.layers.waves = L.layerGroup(markers);
+    } catch(e) {}
+}
+
+async function setupSalinity() {
+    const buoys = [{ lat: 25, lon: -80 }, { lat: 35, lon: 140 }, { lat: -34, lon: 18 }, { lat: 0, lon: -10 }];
+    const lats = buoys.map(b => b.lat).join(',');
+    const lons = buoys.map(b => b.lon).join(',');
+    try {
+        const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}&current=ocean_current_velocity`);
+        const data = await res.json();
+        const results = Array.isArray(data) ? data : [data];
+        const markers = [];
+        results.forEach(d => {
+            if (!d.current) return;
+            const v = d.current.ocean_current_velocity;
+            markers.push(L.circleMarker([d.latitude, d.longitude], { radius: v * 10, color: '#39ff14', fillOpacity: 0.2 }).bindPopup(`<b>FLOW</b><br>Velocity: ${v} m/s`));
+        });
+        STATE.layers.salinity = L.layerGroup(markers);
+    } catch (e) { }
+}
 
 function toggleLayer(key) {
     if (!STATE.layers[key]) return;
