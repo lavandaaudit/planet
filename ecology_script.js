@@ -18,18 +18,21 @@ window.onload = () => {
 };
 
 function startClocks() {
-    setInterval(() => {
+    function updateClock() {
         const now = new Date();
         // UTC Time
         document.getElementById('utc-clock').innerText = now.toISOString().substr(11, 8) + ' UTC';
         
-        // Date (e.g. 11 ЛИПНЯ 2025)
+        // Date (e.g. 11 ЛИПНЯ 2026)
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById('date-display').innerText = now.toLocaleDateString('uk-UA', options).toUpperCase();
         
         // System update time
-        document.getElementById('sys-time').innerText = now.toTimeString().substr(0, 8);
-    }, 1000);
+        const sysEl = document.getElementById('sys-time');
+        if (sysEl) sysEl.innerText = now.toTimeString().substr(0, 8);
+    }
+    updateClock(); // Run immediately
+    setInterval(updateClock, 1000);
 }
 
 function initMap() {

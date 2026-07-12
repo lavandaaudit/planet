@@ -44,9 +44,6 @@
                     <span id="utc-clock">00:00:00 UTC</span>
                     <span id="date-display">-- --- ----</span>
                 </div>
-                <button class="settings-btn">
-                    <i data-lucide="settings"></i> НАЛАШТУВАННЯ
-                </button>
             </div>
         </header>
 
@@ -56,7 +53,7 @@
             <!-- LEFT PANEL (Scrollable) -->
             <aside class="panel left-panel">
                 <section class="widget">
-                    <div class="widget-header">PLANET STATUS <i data-lucide="info"></i></div>
+                    <div class="widget-header">PLANET STATUS</div>
                     <div class="status-big">
                         <div class="status-text green">STABLE</div>
                         <div class="status-sub">Стан планети відносно стабільний</div>
@@ -65,7 +62,7 @@
                 </section>
 
                 <section class="widget">
-                    <div class="widget-header">EARTH PULSE <i data-lucide="info"></i></div>
+                    <div class="widget-header">EARTH PULSE</div>
                     <div class="earth-pulse">
                         <div class="pulse-circle">
                             <svg viewBox="0 0 100 100">
@@ -79,11 +76,11 @@
                             <div class="pulse-trend green">+4 за 24 год ↗</div>
                         </div>
                     </div>
-                    <div class="widget-footer">Індекс розраховується з 24 ключових показників планети та космосу</div>
+
                 </section>
 
                 <section class="widget">
-                    <div class="widget-header">ACTIVE EVENTS <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <div class="widget-header">ACTIVE EVENTS</div>
                     <ul class="event-list">
                         <li><i data-lucide="activity" class="c-red"></i> <span>Землетруси</span> <span class="val c-red" id="active-quakes">0 активних</span></li>
                         <li><i data-lucide="flame" class="c-orange"></i> <span>Лісові пожежі</span> <span class="val c-orange" id="active-fires">0 активних</span></li>
@@ -95,7 +92,7 @@
                 </section>
 
                 <section class="widget">
-                    <div class="widget-header">TOP RISK REGIONS <i data-lucide="info"></i> <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <div class="widget-header">TOP RISK REGIONS</div>
                     <div class="risk-regions">
                         <div class="risk-item">
                             <div class="risk-label"><span>1 🇮🇩 Indonesia</span> <span>Вулканічна активність <b class="c-red">92%</b></span></div>
@@ -114,7 +111,7 @@
 
                 <!-- Former Right Panel Widgets -->
                 <section class="widget">
-                    <div class="widget-header">SPACE WEATHER <i data-lucide="info"></i> <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <div class="widget-header">SPACE WEATHER</div>
                     <div class="space-grid" id="space-grid">
                         <div class="space-item">
                             <i data-lucide="globe" class="c-yellow"></i>
@@ -152,7 +149,7 @@
                 </section>
 
                 <section class="widget">
-                    <div class="widget-header">PLANET SUMMARY (AI) <i data-lucide="info"></i> <span class="update-time">ОНОВЛЕНО 17:58</span></div>
+                    <div class="widget-header">PLANET SUMMARY (AI)</div>
                     <div class="ai-summary">
                         <p>Стан планети відносно стабільний.</p>
                         <p>Основні ризики сьогодні:</p>
@@ -168,7 +165,7 @@
                 </section>
 
                 <section class="widget">
-                    <div class="widget-header">PREDICTION (НАСТУПНІ 24 ГОДИНИ) <i data-lucide="info"></i></div>
+                    <div class="widget-header">PREDICTION (НАСТУПНІ 24 ГОДИНИ)</div>
                     <ul class="prediction-list">
                         <li>
                             <div class="p-left"><i data-lucide="flame" class="c-red"></i> Ризик лісових пожеж</div>
@@ -187,7 +184,7 @@
 
                 <!-- Former Bottom Panel Widgets -->
                 <section class="widget feeds-panel">
-                    <div class="widget-header">LIVE FEEDS & TRENDS <i data-lucide="info"></i></div>
+                    <div class="widget-header">LIVE FEEDS & TRENDS</div>
                     <div class="mini-charts-grid">
                         <div class="m-chart">
                             <div class="mc-head"><span>ЗЕМЛЕТРУСИ</span> <span class="mc-time">24 години</span></div>
@@ -229,7 +226,7 @@
                 </section>
                 
                 <section class="widget bot-widget">
-                    <div class="widget-header">CLIMATE MONITORING <i data-lucide="info"></i></div>
+                    <div class="widget-header">CLIMATE MONITORING</div>
                     <div class="climate-grid">
                         <div class="cl-item">
                             <div class="cl-lbl">CO2</div>
@@ -259,7 +256,7 @@
                 </section>
 
                 <section class="widget bot-widget">
-                    <div class="widget-header">INFRASTRUCTURE MONITORING <i data-lucide="info"></i></div>
+                    <div class="widget-header">INFRASTRUCTURE MONITORING</div>
                     <div class="infra-grid">
                         <div class="in-item"><i data-lucide="wifi" class="c-green"></i> <div><span>Інтернет</span><br><b class="c-green">Стабільний</b></div></div>
                         <div class="in-item"><i data-lucide="satellite" class="c-green"></i> <div><span>GPS</span><br><b class="c-green">Норма</b></div></div>
@@ -283,20 +280,6 @@
 
             <!-- CENTER PANEL (Map & Timeline) -->
             <main class="panel center-panel">
-                <!-- Timeline -->
-                <div class="timeline-container">
-                    <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
-                    <div class="timeline-events" id="timeline-events">
-                        <!-- Populated by JS -->
-                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
-                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
-                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
-                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
-                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
-                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
-                    </div>
-                </div>
-
                 <!-- Map Controls -->
                 <div class="map-tabs">
                     <button class="tab-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">ЗЕМЛЕТРУСИ</button>
@@ -310,8 +293,6 @@
                     <button class="tab-btn" id="btn-chloro" onclick="toggleLayer('chloro')">ХЛОРОФІЛ</button>
                     <button class="tab-btn" id="btn-salinity" onclick="toggleLayer('salinity')">ТЕЧІЇ</button>
                     <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
-                    <div class="tab-spacer"></div>
-                    <button class="tab-btn icon-btn"><i data-lucide="layers"></i></button>
                 </div>
 
                 <!-- Map -->
@@ -325,7 +306,20 @@
                         <div class="legend-item"><div class="dot bg-orange"></div> ВИСОКИЙ</div>
                         <div class="legend-item"><div class="dot bg-red"></div> КРИТИЧНИЙ</div>
                         <div class="legend-spacer"></div>
-                        <div class="legend-item"><div class="dot blinking bg-green"></div> ДАНІ В РЕАЛЬНОМУ ЧАСІ</div>
+                        <div class="legend-item"><div class="dot blinking bg-green"></div> LIVE DATA</div>
+                    </div>
+                </div>
+
+                <!-- Timeline (below map) -->
+                <div class="timeline-container">
+                    <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
+                    <div class="timeline-events" id="timeline-events">
+                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
+                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
+                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
+                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
+                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
+                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
                     </div>
                 </div>
             </main>
