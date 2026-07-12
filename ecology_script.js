@@ -6,10 +6,10 @@
 
 // ───── CONFIG ─────
 const CONFIG = {
-    REFRESH_MS: 300000,
+    REFRESH_MS: 900000,          // 15 хв (було 5 хв) — зменшуємо навантаження на API
     CHART_HISTORY: 20,
-    MAP_REFRESH_MS: 60000,
-    FETCH_TIMEOUT: 15000,
+    MAP_REFRESH_MS: 300000,      // 5 хв (було 1 хв) — карта не потребує частого оновлення
+    FETCH_TIMEOUT: 20000,        // 20с (було 15с)
 
     API: {
         EARTHQUAKES: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson',
@@ -126,25 +126,109 @@ function startClocks() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  RESPONSE CACHE (prevents NASA 429 rate-limit)
+//  RESPONSE CACHE — localStorage + memory для NASA API
+//  Вирішує проблему 429 rate-limit з DEMO_KEY
 // ═══════════════════════════════════════════════════════
-const _cache = new Map(); // key -> { data, ts, ttl }
+const _cache = new Map(); // key -> { data, ts }
 const _CACHE_TTL = {
-    'nasa': 30 * 60 * 1000,   // 30 хв для NASA API (DEMO_KEY ліміт)
-    'default': 4 * 60 * 1000  // 4 хв для інших
+    'nasa-donki':  2 * 60 * 60 * 1000,  // 2 год для DONKI (CME/FLR/GST)
+    'nasa-apod':   24 * 60 * 60 * 1000,  // 24 год для APOD (змінюється раз на день)
+    'nasa-eonet':  30 * 60 * 1000,       // 30 хв для NASA EONET
+    'nasa':        2 * 60 * 60 * 1000,   // 2 год default для NASA
+    'default':     4 * 60 * 1000         // 4 хв для інших
 };
 
+const _STORAGE_PREFIX = 'ibonium_cache_';
+
 function cacheKey(url) { return url; }
+
+// Визначаємо тип кешу за URL
+function _getCacheType(url) {
+    if (url.includes('DONKI')) return 'nasa-donki';
+    if (url.includes('planetary/apod')) return 'nasa-apod';
+    if (url.includes('eonet.gsfc.nasa.gov')) return 'nasa-eonet';
+    if (url.includes('nasa.gov')) return 'nasa';
+    return 'default';
+}
+
+function _getTTL(url) {
+    return _CACHE_TTL[_getCacheType(url)] || _CACHE_TTL['default'];
+}
+
+// Читаємо з localStorage для NASA (переживає перезавантаження сторінки)
+function _storageGet(url) {
+    try {
+        const raw = localStorage.getItem(_STORAGE_PREFIX + url);
+        if (!raw) return null;
+        const entry = JSON.parse(raw);
+        const ttl = _getTTL(url);
+        if (Date.now() - entry.ts > ttl) {
+            localStorage.removeItem(_STORAGE_PREFIX + url);
+            return null;
+        }
+        return entry.data;
+    } catch(e) { return null; }
+}
+
+// Зберігаємо в localStorage для NASA
+function _storageSet(url, data) {
+    if (!url.includes('nasa.gov')) return; // localStorage тільки для NASA
+    try {
+        localStorage.setItem(_STORAGE_PREFIX + url, JSON.stringify({ data, ts: Date.now() }));
+    } catch(e) { /* localStorage переповнений — ігноруємо */ }
+}
+
 function cacheGet(url) {
     const k = cacheKey(url);
+    // Спочатку memory cache
     const entry = _cache.get(k);
-    if (!entry) return null;
-    const isNASA = url.includes('api.nasa.gov');
-    const ttl = isNASA ? _CACHE_TTL.nasa : _CACHE_TTL.default;
-    if (Date.now() - entry.ts > ttl) { _cache.delete(k); return null; }
-    return entry.data;
+    if (entry) {
+        const ttl = _getTTL(url);
+        if (Date.now() - entry.ts <= ttl) return entry.data;
+        _cache.delete(k);
+    }
+    // Для NASA — перевіряємо localStorage
+    if (url.includes('nasa.gov')) {
+        const stored = _storageGet(url);
+        if (stored !== null) {
+            // Піднімаємо в memory cache
+            _cache.set(k, { data: stored, ts: Date.now() });
+            return stored;
+        }
+    }
+    return null;
 }
-function cacheSet(url, data) { _cache.set(cacheKey(url), { data, ts: Date.now() }); }
+
+function cacheSet(url, data) {
+    _cache.set(cacheKey(url), { data, ts: Date.now() });
+    _storageSet(url, data);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NASA RATE LIMITER — захист від 429
+//  DEMO_KEY дозволяє ~30 запитів/годину, ми обмежуємо до 12
+// ═══════════════════════════════════════════════════════
+const _nasaRequestLog = []; // timestamps of recent NASA requests
+const _NASA_MAX_HOURLY = 12;
+const _NASA_MIN_INTERVAL = 8000; // мінімум 8с між NASA запитами
+let _lastNasaRequest = 0;
+
+function _canMakeNasaRequest() {
+    const now = Date.now();
+    // Очищаємо старі записи (старші 1 години)
+    while (_nasaRequestLog.length > 0 && now - _nasaRequestLog[0] > 3600000) {
+        _nasaRequestLog.shift();
+    }
+    if (_nasaRequestLog.length >= _NASA_MAX_HOURLY) return false;
+    if (now - _lastNasaRequest < _NASA_MIN_INTERVAL) return false;
+    return true;
+}
+
+function _recordNasaRequest() {
+    const now = Date.now();
+    _nasaRequestLog.push(now);
+    _lastNasaRequest = now;
+}
 
 // ═══════════════════════════════════════════════════════
 //  SAFE FETCH WITH TIMEOUT + 429 CACHE FALLBACK
@@ -157,17 +241,34 @@ function fetchWithTimeout(url, ms) {
 
 async function safeFetch(url, label) {
     const isNASA = url.includes('api.nasa.gov');
+
+    // Для NASA — перевіряємо ліміт перед запитом
+    if (isNASA && !_canMakeNasaRequest()) {
+        console.warn('[NASA RATE GUARD] ' + label + ' — пропускаємо запит (ліміт), використовуємо кеш');
+        const cached = cacheGet(url);
+        if (cached !== null) {
+            STATE.apiStatus[label] = 'cached';
+            return cached;
+        }
+        // Навіть без кешу — не робимо запит, щоб не отримати 429
+        STATE.apiStatus[label] = 'cached';
+        return null;
+    }
+
     try {
+        if (isNASA) _recordNasaRequest();
         const r = await fetchWithTimeout(url, CONFIG.FETCH_TIMEOUT);
         if (r.status === 429) {
             // Rate-limited — повертаємо кешовані дані якщо є
-            console.warn(`[429 RATE LIMIT] ${label} — використовуємо кеш`);
+            console.warn('[429 RATE LIMIT] ' + label + ' — використовуємо кеш');
             const cached = cacheGet(url);
             if (cached !== null) {
                 STATE.apiStatus[label] = 'cached';
                 return cached;
             }
-            throw new Error('429-no-cache');
+            // 429 без кешу — не додаємо як помилку, просто тихо повертаємо null
+            STATE.apiStatus[label] = 'cached';
+            return null;
         }
         if (!r.ok) throw new Error(r.status);
         const data = await r.json();
@@ -176,17 +277,22 @@ async function safeFetch(url, label) {
         return data;
     } catch (e) {
         const msg = e.name === 'AbortError' ? 'timeout' : e.message;
-        console.warn(`[API FAIL] ${label}: ${msg}`);
+        console.warn('[API FAIL] ' + label + ': ' + msg);
         STATE.apiStatus[label] = false;
-        STATE.errors.push(label + ':' + msg);
+        // Не додаємо NASA помилки в загальний список (429 є нормою з DEMO_KEY)
+        if (!isNASA) {
+            STATE.errors.push(label + ':' + msg);
+        }
         // При помилці спробуємо кеш для NASA
         if (isNASA) {
             const cached = cacheGet(url);
             if (cached !== null) {
-                console.warn(`[CACHE FALLBACK] ${label} — дані з кешу`);
+                console.warn('[CACHE FALLBACK] ' + label + ' — дані з кешу');
                 STATE.apiStatus[label] = 'cached';
                 return cached;
             }
+            STATE.apiStatus[label] = 'cached';
+            return null;
         }
         return null;
     }
@@ -201,7 +307,7 @@ async function safeFetchText(url, label) {
         return text;
     } catch (e) {
         const msg = e.name === 'AbortError' ? 'timeout' : e.message;
-        console.warn(`[API FAIL] ${label}: ${msg}`);
+        console.warn('[API FAIL] ' + label + ': ' + msg);
         STATE.apiStatus[label] = false;
         STATE.errors.push(label + ':' + msg);
         return null;
@@ -229,13 +335,12 @@ async function fetchEONET() {
 async function fetchSpaceWeather() {
     const result = { kp: null, dst: null, f107: null, alerts: [] };
 
-    // Kp index — формат: масив об'єктів {time_tag, Kp, a_running, station_count}
+    // Kp index
     try {
         const kpRaw = await safeFetch(CONFIG.API.SWPC_KP, 'NOAA-Kp');
         if (kpRaw && Array.isArray(kpRaw) && kpRaw.length > 1) {
             for (let i = kpRaw.length - 1; i >= 1; i--) {
                 const obj = kpRaw[i];
-                // Підтримка як об'єктів так і масивів (для стабільності)
                 const val = parseFloat(typeof obj === 'object' && !Array.isArray(obj) ? obj.Kp : obj[1]);
                 if (!isNaN(val)) { result.kp = val; break; }
             }
@@ -273,7 +378,7 @@ async function fetchSpaceWeather() {
     return result;
 }
 
-// NEW: NASA DONKI — CME, FLR, GST
+// NASA DONKI — CME, FLR, GST (з розподіленою затримкою між запитами)
 async function fetchDONKI() {
     const result = { cmes: [], flrs: [], gsts: [], earthDirected: 0, maxSpeed: 0, latestFlare: null };
     const today = new Date();
@@ -282,6 +387,7 @@ async function fetchDONKI() {
     const startStr = fmt(start);
     const endStr = fmt(today);
 
+    // CME
     try {
         const cmeUrl = CONFIG.API.DONKI_CME.replace('START', startStr).replace('END', endStr);
         const cmeData = await safeFetch(cmeUrl, 'NASA-DONKI-CME');
@@ -305,6 +411,10 @@ async function fetchDONKI() {
         }
     } catch(e) {}
 
+    // Затримка 3с між NASA запитами
+    await new Promise(r => setTimeout(r, 3000));
+
+    // FLR
     try {
         const flrUrl = CONFIG.API.DONKI_FLR.replace('START', startStr).replace('END', endStr);
         const flrData = await safeFetch(flrUrl, 'NASA-DONKI-FLR');
@@ -314,6 +424,10 @@ async function fetchDONKI() {
         }
     } catch(e) {}
 
+    // Затримка 3с між NASA запитами
+    await new Promise(r => setTimeout(r, 3000));
+
+    // GST
     try {
         const gstUrl = CONFIG.API.DONKI_GST.replace('START', startStr).replace('END', endStr);
         const gstData = await safeFetch(gstUrl, 'NASA-DONKI-GST');
@@ -346,7 +460,7 @@ async function fetchAirQuality() {
         const cities = CONFIG.API.AQ_CITIES;
         const lats = cities.map(c => c.lat).join(',');
         const lons = cities.map(c => c.lon).join(',');
-        const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lats}&longitude=${lons}&current=pm2_5,pm10,nitrogen_dioxide,ozone,carbon_monoxide&timezone=auto`;
+        const url = 'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lats + '&longitude=' + lons + '&current=pm2_5,pm10,nitrogen_dioxide,ozone,carbon_monoxide&timezone=auto';
         const data = await safeFetch(url, 'Open-Meteo-AQ');
         if (!data) return [];
         const results = [];
@@ -373,12 +487,12 @@ async function fetchAirQuality() {
     } catch(e) { return []; }
 }
 
-// NEW: Open-Meteo Weather Forecast
+// Open-Meteo Weather Forecast
 async function fetchWeather() {
     const results = [];
     const promises = CONFIG.API.WEATHER_CITIES.map(async city => {
         try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,pressure_msl,precipitation,cloud_cover&timezone=auto`;
+            const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + city.lat + '&longitude=' + city.lon + '&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,pressure_msl,precipitation,cloud_cover&timezone=auto';
             const data = await safeFetch(url, 'Open-Meteo-Weather');
             if (!data || !data.current) return null;
             return {
@@ -398,13 +512,12 @@ async function fetchWeather() {
     return results;
 }
 
-// NEW: NOAA Tides
+// NOAA Tides
 async function fetchTides() {
     try {
         const data = await safeFetch(CONFIG.API.TIDES_URL, 'NOAA-Tides');
         if (!data || !data.predictions) return null;
         const preds = data.predictions;
-        // Find closest prediction to now
         const now = new Date();
         let closest = null, minDiff = Infinity;
         let nextHigh = null, nextLow = null;
@@ -413,7 +526,6 @@ async function fetchTides() {
             const diff = Math.abs(t - now);
             if (diff < minDiff) { minDiff = diff; closest = preds[i]; }
             const val = parseFloat(preds[i].v);
-            // Find next high/low tide
             if (t > now) {
                 if (!nextHigh && val > 0.5) nextHigh = { time: t, val: val };
                 if (!nextLow && val < 0.3) nextLow = { time: t, val: val };
@@ -428,12 +540,12 @@ async function fetchTides() {
     } catch(e) { return null; }
 }
 
-// NEW: USGS Water Services
+// USGS Water Services
 async function fetchRivers() {
     const results = [];
     const promises = CONFIG.API.USGS_RIVERS.map(async river => {
         try {
-            const url = `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${river.site}&parameterCd=00060,00065`;
+            const url = 'https://waterservices.usgs.gov/nwis/iv/?format=json&sites=' + river.site + '&parameterCd=00060,00065';
             const data = await safeFetch(url, 'USGS-Water');
             if (!data || !data.value || !data.value.timeSeries) return null;
             const ts = data.value.timeSeries;
@@ -457,9 +569,23 @@ async function fetchRivers() {
     return results;
 }
 
-// NEW: NASA APOD
+// NASA APOD (кешується на 24 год — змінюється раз на день)
 async function fetchAPOD() {
     try {
+        // Спочатку перевіряємо кеш — APOD змінюється раз на день
+        const cached = cacheGet(CONFIG.API.APOD);
+        if (cached) {
+            console.log('[APOD] Використовуємо кешовані дані (оновлюється раз на добу)');
+            STATE.apiStatus['NASA-APOD'] = 'cached';
+            return {
+                title: cached.title || '',
+                url: cached.url || '',
+                hdurl: cached.hdurl || '',
+                explanation: cached.explanation || '',
+                media_type: cached.media_type || 'image',
+                date: cached.date || ''
+            };
+        }
         const data = await safeFetch(CONFIG.API.APOD, 'NASA-APOD');
         if (!data) return null;
         return {
@@ -477,7 +603,7 @@ async function fetchMarine() {
     const results = [];
     const promises = CONFIG.API.BUOYS.map(async b => {
         try {
-            const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${b.lat}&longitude=${b.lon}&current=wave_height,wave_period,wave_direction&timezone=auto`;
+            const url = 'https://marine-api.open-meteo.com/v1/marine?latitude=' + b.lat + '&longitude=' + b.lon + '&current=wave_height,wave_period,wave_direction&timezone=auto';
             const r = await fetchWithTimeout(url, CONFIG.FETCH_TIMEOUT);
             if (!r.ok) return null;
             const data = await r.json();
@@ -499,7 +625,7 @@ async function fetchCurrents() {
         const buoys = CONFIG.API.CURRENT_BUOYS;
         const lats = buoys.map(b => b.lat).join(',');
         const lons = buoys.map(b => b.lon).join(',');
-        const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lats}&longitude=${lons}&current=ocean_current_velocity,ocean_current_direction&timezone=auto`;
+        const url = 'https://marine-api.open-meteo.com/v1/marine?latitude=' + lats + '&longitude=' + lons + '&current=ocean_current_velocity,ocean_current_direction&timezone=auto';
         const data = await safeFetch(url, 'Open-Meteo-Marine');
         if (!data) return [];
         const arr = Array.isArray(data) ? data : [data];
@@ -561,7 +687,6 @@ function calcEarthPulse(d) {
     risk += Math.min((d.volcanoesCount || 0) * 4, 10);
     if (d.kp && d.kp > 4) risk += (d.kp - 4) * 3;
     if (d.avgAqi > 100) risk += Math.min((d.avgAqi - 100) * 0.2, 10);
-    // NEW: DONKI CME Earth-directed adds risk
     if (d.earthDirected > 0) risk += Math.min(d.earthDirected * 5, 15);
     return Math.max(0, Math.min(100, Math.round(100 - risk)));
 }
@@ -647,7 +772,7 @@ function buildTimeline(d) {
             });
         }
     }
-    // NEW: DONKI events in timeline
+    // DONKI events in timeline
     if (d.donki) {
         if (d.donki.latestFlare) {
             var flr = d.donki.latestFlare;
@@ -691,23 +816,25 @@ function buildAISummary(d) {
         if (d.spaceWeather.dst !== null) p.push('Dst-індекс: <b>' + d.spaceWeather.dst + ' nT</b>.');
         if (d.spaceWeather.f107 !== null) p.push('F10.7 радіопотік: <b>' + d.spaceWeather.f107 + ' SFU</b>.');
     }
-    // NEW: DONKI summary
+    // DONKI summary
     if (d.donki) {
         if (d.donki.cmes.length > 0) p.push('NASA DONKI: <b>' + d.donki.cmes.length + '</b> CME за 3 дні' + (d.donki.earthDirected > 0 ? ', <b style="color:#ff3333">' + d.donki.earthDirected + ' спрямованих до Землі</b>' : '') + '.');
         if (d.donki.latestFlare) p.push('Останній спалах: <b>' + d.donki.latestFlare.classType + '</b> (' + d.donki.latestFlare.sourceLocation + ').');
     }
-    // NEW: Weather
+    // Weather
     if (d.weather && d.weather.length > 0) {
         var kyiv = d.weather.find(function(w) { return w.name === 'Київ'; });
         if (kyiv) p.push('Київ: <b>' + kyiv.temp + '°C</b>, вітер ' + kyiv.wind + ' км/г, тиск ' + kyiv.pressure + ' hPa.');
     }
-    // NEW: Rivers
+    // Rivers
     if (d.rivers && d.rivers.length > 0) {
         var highRivers = d.rivers.filter(function(r) { return r.discharge && r.discharge > 10000; });
         if (highRivers.length > 0) p.push('Високий рівень річок: <b>' + highRivers.map(function(r) { return r.name; }).join(', ') + '</b>.');
     }
     if (d.co2) p.push('CO2 (Mauna Loa): <b>' + d.co2.toFixed(1) + ' ppm</b>.');
-    if (STATE.errors.length > 0) p.push('<span style="color:#666">API помилки: ' + STATE.errors.slice(-3).join(', ') + '</span>');
+    // Показуємо помилки тільки для не-NASA API (NASA 429 є нормою з DEMO_KEY)
+    var nonNasaErrors = STATE.errors.filter(function(e) { return !e.startsWith('NASA'); });
+    if (nonNasaErrors.length > 0) p.push('<span style="color:#666">API помилки: ' + nonNasaErrors.slice(-3).join(', ') + '</span>');
     return p.map(function(x) { return '<p>' + x + '</p>'; }).join('');
 }
 
@@ -731,7 +858,7 @@ function buildPredictions(d) {
     else if ((d.stormsCount || 0) > 0) preds.push({ label: 'Тропічні циклони', level: 'ПОМІРНИЙ', color: 'yellow' });
     else preds.push({ label: 'Тропічні циклони', level: 'НИЗЬКА', color: 'green' });
 
-    // NEW: DONKI CME prediction
+    // DONKI CME prediction
     if (d.donki && d.donki.earthDirected > 0) {
         preds.push({ label: 'CME удар по Землі (DONKI)', level: 'ОЧІКУЄТЬСЯ', color: 'red' });
     } else if (d.donki && d.donki.cmes.length > 3) {
@@ -831,7 +958,7 @@ function updateSpaceWeatherUI(sw) {
     if (el4) { el4.textContent = wL; el4.className = 'sp-stat ' + wC; }
 }
 
-// NEW: DONKI UI
+// DONKI UI
 function updateDONKIUI(donki) {
     var c = document.getElementById('donki-data');
     if (!c) return;
@@ -863,7 +990,7 @@ function updateDONKIUI(donki) {
     c.innerHTML = html;
 }
 
-// NEW: Weather UI
+// Weather UI
 function updateWeatherUI(weather) {
     var c = document.getElementById('weather-data');
     if (!c) return;
@@ -888,7 +1015,7 @@ function getWindArrow(deg) {
     return arrows[idx];
 }
 
-// NEW: Water Monitoring UI
+// Water Monitoring UI
 function updateWaterUI(rivers, tides) {
     var c = document.getElementById('water-data');
     if (!c) return;
@@ -927,7 +1054,7 @@ function updateWaterUI(rivers, tides) {
     c.innerHTML = html;
 }
 
-// NEW: APOD UI
+// APOD UI
 function updateAPODUI(apod) {
     var c = document.getElementById('apod-container');
     if (!c) return;
@@ -1088,7 +1215,7 @@ function buildEONETLayers(d) {
     STATE.layers.fireMarkers = makeLayer(d.fireEvents, '#ff6600', 'Fire');
 }
 
-// NEW: River markers on map
+// River markers on map
 function buildRiverMarkers(rivers) {
     if (STATE.layers.rivers) try { STATE.map.removeLayer(STATE.layers.rivers); } catch(e) {}
     var g = L.layerGroup();
@@ -1197,7 +1324,7 @@ async function refreshAll() {
         co2 = null, aqData = [], marineData = [], currents = [],
         donki = null, weather = [], tides = null, rivers = [], apod = null;
 
-    // ── Phase 1: Parallel fetch all APIs ──
+    // ── Phase 1: Parallel fetch all non-NASA APIs ──
     try {
         var results = await Promise.allSettled([
             fetchEarthquakes(),
@@ -1207,11 +1334,9 @@ async function refreshAll() {
             fetchAirQuality(),
             fetchMarine(),
             fetchCurrents(),
-            fetchDONKI(),        // NEW
-            fetchWeather(),      // NEW
-            fetchTides(),        // NEW
-            fetchRivers(),       // NEW
-            fetchAPOD()          // NEW
+            fetchWeather(),
+            fetchTides(),
+            fetchRivers()
         ]);
         if (results[0].status === 'fulfilled') quakes = results[0].value || [];
         if (results[1].status === 'fulfilled') eonetEvents = results[1].value || [];
@@ -1220,13 +1345,23 @@ async function refreshAll() {
         if (results[4].status === 'fulfilled') aqData = results[4].value || [];
         if (results[5].status === 'fulfilled') marineData = results[5].value || [];
         if (results[6].status === 'fulfilled') currents = results[6].value || [];
-        if (results[7].status === 'fulfilled') donki = results[7].value;
-        if (results[8].status === 'fulfilled') weather = results[8].value || [];
-        if (results[9].status === 'fulfilled') tides = results[9].value;
-        if (results[10].status === 'fulfilled') rivers = results[10].value || [];
-        if (results[11].status === 'fulfilled') apod = results[11].value;
+        if (results[7].status === 'fulfilled') weather = results[7].value || [];
+        if (results[8].status === 'fulfilled') tides = results[8].value;
+        if (results[9].status === 'fulfilled') rivers = results[9].value || [];
     } catch(e) {
-        console.error('[IBONARIUM] Fetch phase error:', e);
+        console.error('[IBONARIUM] Fetch phase 1 error:', e);
+    }
+
+    // ── Phase 1b: NASA APIs окремо (з внутрішніми затримками в fetchDONKI) ──
+    try {
+        var nasaResults = await Promise.allSettled([
+            fetchDONKI(),   // внутрішньо робить 3 запити з 3с затримкою між ними
+            fetchAPOD()     // кешується на 24 год, фактично 1 запит/добу
+        ]);
+        if (nasaResults[0].status === 'fulfilled') donki = nasaResults[0].value;
+        if (nasaResults[1].status === 'fulfilled') apod = nasaResults[1].value;
+    } catch(e) {
+        console.error('[IBONARIUM] NASA fetch phase error:', e);
     }
 
     // ── Phase 2: Process + UI ──
@@ -1254,16 +1389,16 @@ async function refreshAll() {
 
     try { updateSpaceWeatherUI(spaceWeather); } catch(e) { console.error('[spaceWeather]', e); }
 
-    // NEW: DONKI UI
+    // DONKI UI
     try { updateDONKIUI(donki); } catch(e) { console.error('[DONKI]', e); }
 
-    // NEW: Weather UI
+    // Weather UI
     try { updateWeatherUI(weather); } catch(e) { console.error('[weather]', e); }
 
-    // NEW: Water UI
+    // Water UI
     try { updateWaterUI(rivers, tides); } catch(e) { console.error('[water]', e); }
 
-    // NEW: APOD UI
+    // APOD UI
     try { updateAPODUI(apod); } catch(e) { console.error('[APOD]', e); }
 
     try { updateClimateUI({ co2: co2, spaceWeather: spaceWeather }); } catch(e) {}
@@ -1296,7 +1431,7 @@ async function refreshAll() {
     } catch(e) {}
     try { setText('ch-co2-val', co2 ? co2.toFixed(1) : 'N/A'); } catch(e) {}
     try { setText('ch-storm-val', stormsCount + ' / ' + totalEvents); setText('ch-storm-sub', 'штормів / подій'); } catch(e) {}
-    // NEW: CME chart
+    // CME chart
     try { setText('ch-cme-val', donki ? donki.maxSpeed : 'N/A'); setText('ch-cme-sub', donki ? (donki.earthDirected > 0 ? 'CME до Землі!' : donki.cmes.length + ' CME') : ''); } catch(e) {}
 
     pushChart(STATE.charts.quakes, quakesCount);
@@ -1312,7 +1447,7 @@ async function refreshAll() {
     try {
         buildEONETLayers({ fireEvents: classified.wildfires, volcanoEvents: classified.volcanoes, stormEvents: classified.severeStorms, floodEvents: classified.floods });
         buildMarineLayers(marineData, currents);
-        buildRiverMarkers(rivers); // NEW
+        buildRiverMarkers(rivers);
         ['quakes', 'fires', 'volcanoes', 'storms', 'floods', 'waves', 'salinity', 'rivers'].forEach(function(key) {
             if (STATE.activeStates[key] && STATE.layers[key]) STATE.map.addLayer(STATE.layers[key]);
         });
