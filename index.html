@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>IBONARIUM // V4.0 PRO ECOLOGY RADAR</title>
-
     <meta name="description" content="Глобальний центр екологічного моніторингу в реальному часі.">
     <meta name="theme-color" content="#05070a">
-    
-    <!-- External Resources -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Fonts -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="ecology_style.css">
@@ -25,265 +22,237 @@
     <div class="vignette"></div>
 
     <div class="dashboard">
-        <!-- Top Header -->
         <header class="top-bar">
             <div class="logo-area">
                 <h1>IBONARIUM <span class="badge">V4.0 PRO</span></h1>
                 <div class="subtitle">ADVANCED ECOLOGICAL ANALYTICS</div>
             </div>
-            
             <div class="header-center">
                 <div class="status-indicator">
                     <div class="dot blinking"></div>
                     <span>СИСТЕМА АКТИВНА</span>
                 </div>
             </div>
-            
             <div class="header-right">
                 <div class="time-display">
-                    <span id="utc-clock">00:00:00 UTC</span>
+                    <span id="utc-clock">--:--:-- UTC</span>
                     <span id="date-display">-- --- ----</span>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content (2 Columns) -->
         <div class="main-content">
-            
-            <!-- LEFT PANEL (Scrollable) -->
+            <!-- LEFT PANEL -->
             <aside class="panel left-panel">
+                <!-- PLANET STATUS -->
                 <section class="widget">
                     <div class="widget-header">PLANET STATUS</div>
                     <div class="status-big">
-                        <div class="status-text green">STABLE</div>
-                        <div class="status-sub">Стан планети відносно стабільний</div>
+                        <div class="status-text" id="planet-status-class">STABLE</div>
+                        <div class="status-sub" id="planet-status-text">Завантаження даних...</div>
                         <div class="ecg-line"></div>
                     </div>
                 </section>
 
+                <!-- EARTH PULSE -->
                 <section class="widget">
                     <div class="widget-header">EARTH PULSE</div>
                     <div class="earth-pulse">
                         <div class="pulse-circle">
                             <svg viewBox="0 0 100 100">
                                 <circle cx="50" cy="50" r="45" class="bg"></circle>
-                                <circle cx="50" cy="50" r="45" class="fg" stroke-dasharray="283" stroke-dashoffset="79"></circle>
+                                <circle cx="50" cy="50" r="45" class="fg" id="pulse-ring" stroke-dasharray="283" stroke-dashoffset="283"></circle>
                             </svg>
-                            <div class="pulse-value">72<span class="small">/100</span></div>
+                            <div class="pulse-value" id="pulse-value">--<span class="small">/100</span></div>
                         </div>
                         <div class="pulse-info">
-                            <div class="pulse-label">MODERATE</div>
-                            <div class="pulse-trend green">+4 за 24 год ↗</div>
+                            <div class="pulse-label" id="pulse-label">--</div>
+                            <div class="pulse-trend green" id="pulse-trend">--</div>
                         </div>
                     </div>
-
                 </section>
 
+                <!-- ACTIVE EVENTS -->
                 <section class="widget">
                     <div class="widget-header">ACTIVE EVENTS</div>
                     <ul class="event-list">
-                        <li><i data-lucide="activity" class="c-red"></i> <span>Землетруси</span> <span class="val c-red" id="active-quakes">0 активних</span></li>
-                        <li><i data-lucide="flame" class="c-orange"></i> <span>Лісові пожежі</span> <span class="val c-orange" id="active-fires">0 активних</span></li>
-                        <li><i data-lucide="cloud-lightning" class="c-cyan"></i> <span>Штормі</span> <span class="val c-cyan">12 активних</span></li>
-                        <li><i data-lucide="waves" class="c-blue"></i> <span>Повені</span> <span class="val c-blue">26 активних</span></li>
-                        <li><i data-lucide="radio" class="c-yellow"></i> <span>Радіаційні загрози</span> <span class="val c-yellow">3 активних</span></li>
-                        <li><i data-lucide="mountain" class="c-orange"></i> <span>Вулканічна активність</span> <span class="val c-orange">8 активних</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg> <span>Землетруси</span> <span class="val c-red" id="active-quakes">завантаження...</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg> <span>Лісові пожежі</span> <span class="val c-orange" id="active-fires">завантаження...</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"></path><path d="m13 12-3 5h4l-3 5"></path></svg> <span>Шторми</span> <span class="val c-cyan" id="active-storms">завантаження...</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12q2.5 2 5 0t5 0 5 0 5 0"></path><path d="M2 19q2.5 2 5 0t5 0 5 0 5 0"></path><path d="M2 5q2.5 2 5 0t5 0 5 0 5 0"></path></svg> <span>Повені</span> <span class="val c-blue" id="active-floods">завантаження...</span></li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.247 7.761a6 6 0 0 1 0 8.478"></path><path d="M19.075 4.933a10 10 0 0 1 0 14.134"></path><path d="M4.925 19.067a10 10 0 0 1 0-14.134"></path><path d="M7.753 16.239a6 6 0 0 1 0-8.478"></path><circle cx="12" cy="12" r="2"></circle></svg> <span>Вулканічна активність</span> <span class="val c-orange" id="active-volcanoes">завантаження...</span></li>
                     </ul>
                 </section>
 
+                <!-- TOP RISK REGIONS -->
                 <section class="widget">
                     <div class="widget-header">TOP RISK REGIONS</div>
-                    <div class="risk-regions">
-                        <div class="risk-item">
-                            <div class="risk-label"><span>1 🇮🇩 Indonesia</span> <span>Вулканічна активність <b class="c-red">92%</b></span></div>
-                            <div class="risk-bar"><div class="fill bg-red" style="width:92%"></div></div>
-                        </div>
-                        <div class="risk-item">
-                            <div class="risk-label"><span>2 🇺🇸 California, USA</span> <span>Лісові пожежі <b class="c-orange">85%</b></span></div>
-                            <div class="risk-bar"><div class="fill bg-orange" style="width:85%"></div></div>
-                        </div>
-                        <div class="risk-item">
-                            <div class="risk-label"><span>3 🇮🇳 Delhi, India</span> <span>Забруднення повітря <b class="c-yellow">78%</b></span></div>
-                            <div class="risk-bar"><div class="fill bg-yellow" style="width:78%"></div></div>
-                        </div>
+                    <div class="risk-regions" id="risk-regions">
+                        <div style="color:#666;padding:8px;font-size:12px;">Завантаження даних...</div>
                     </div>
                 </section>
 
-                <!-- Former Right Panel Widgets -->
+                <!-- SPACE WEATHER -->
                 <section class="widget">
                     <div class="widget-header">SPACE WEATHER</div>
                     <div class="space-grid" id="space-grid">
                         <div class="space-item">
-                            <i data-lucide="globe" class="c-yellow"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
                             <div class="sp-data">
                                 <div class="sp-lbl">Kp Index</div>
-                                <div class="sp-val" id="sw-kp">3.2</div>
-                                <div class="sp-stat c-yellow">Помірний</div>
+                                <div class="sp-val" id="sw-kp">--</div>
+                                <div class="sp-stat" id="sw-kp-stat">--</div>
                             </div>
                         </div>
                         <div class="space-item">
-                            <i data-lucide="magnet" class="c-cyan"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 15 4 4"></path><path d="M2.352 10.648a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.029-6.029a1 1 0 1 1 3 3l-6.029 6.029a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l6.365-6.367A1 1 0 0 0 8.716 4.282z"></path></svg>
                             <div class="sp-data">
                                 <div class="sp-lbl">Dst Index</div>
-                                <div class="sp-val" id="sw-dst">-18 nT</div>
-                                <div class="sp-stat c-green">Стабільний</div>
+                                <div class="sp-val" id="sw-dst">--</div>
+                                <div class="sp-stat" id="sw-dst-stat">--</div>
                             </div>
                         </div>
                         <div class="space-item">
-                            <i data-lucide="sun" class="c-orange"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
                             <div class="sp-data">
                                 <div class="sp-lbl">X-Ray Flux</div>
-                                <div class="sp-val" id="sw-xray">M1.2</div>
-                                <div class="sp-stat c-orange">Підвищений</div>
+                                <div class="sp-val" id="sw-xray">--</div>
+                                <div class="sp-stat" id="sw-xray-stat">--</div>
                             </div>
                         </div>
                         <div class="space-item">
-                            <i data-lucide="wind" class="c-cyan"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path><path d="M9.8 4.4A2 2 0 1 1 11 8H2"></path></svg>
                             <div class="sp-data">
                                 <div class="sp-lbl">Сонячний вітер</div>
-                                <div class="sp-val" id="sw-wind">412 km/s</div>
-                                <div class="sp-stat c-green">Норма</div>
+                                <div class="sp-val" id="sw-wind">--</div>
+                                <div class="sp-stat" id="sw-wind-stat">--</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
+                <!-- AI SUMMARY -->
                 <section class="widget">
-                    <div class="widget-header">PLANET SUMMARY (AI)</div>
-                    <div class="ai-summary">
-                        <p>Стан планети відносно стабільний.</p>
-                        <p>Основні ризики сьогодні:</p>
-                        <ul>
-                            <li>Зростання лісових пожеж у Сибіру та Канаді.</li>
-                            <li>Високий рівень забруднення повітря в Індії.</li>
-                            <li>За останні 24 години зафіксовано 2 землетруси магнітудою понад M5.</li>
-                            <li>Сонячна активність помірна, геомагнітна обстановка спокійна.</li>
-                            <li>Рівень глобальної температури вище норми на 0.62°C.</li>
-                        </ul>
-                        <button class="action-btn">ПОВНИЙ АНАЛІЗ <i data-lucide="external-link"></i></button>
+                    <div class="widget-header">PLANET SUMMARY (LIVE DATA)</div>
+                    <div class="ai-summary" id="ai-summary">
+                        <p>Завантаження даних з API...</p>
                     </div>
                 </section>
 
+                <!-- PREDICTIONS -->
                 <section class="widget">
-                    <div class="widget-header">PREDICTION (НАСТУПНІ 24 ГОДИНИ)</div>
-                    <ul class="prediction-list">
-                        <li>
-                            <div class="p-left"><i data-lucide="flame" class="c-red"></i> Ризик лісових пожеж</div>
-                            <div class="p-right c-red">ВИСОКИЙ ↗</div>
-                        </li>
-                        <li>
-                            <div class="p-left"><i data-lucide="activity" class="c-orange"></i> Ймовірність землетрусів</div>
-                            <div class="p-right c-orange">СЕРЕДНЯ —</div>
-                        </li>
-                        <li>
-                            <div class="p-left"><i data-lucide="sun" class="c-green"></i> Сонячна буря</div>
-                            <div class="p-right c-green">НИЗЬКА ↓</div>
-                        </li>
+                    <div class="widget-header">RISK ASSESSMENT (НАСТУПНІ 24 ГОДИНИ)</div>
+                    <ul class="prediction-list" id="prediction-list">
+                        <li style="color:#666;font-size:12px;">Обчислення на основі поточних даних...</li>
                     </ul>
                 </section>
 
-                <!-- Former Bottom Panel Widgets -->
+                <!-- LIVE FEEDS & TRENDS -->
                 <section class="widget feeds-panel">
-                    <div class="widget-header">LIVE FEEDS & TRENDS</div>
+                    <div class="widget-header">LIVE FEEDS &amp; TRENDS</div>
                     <div class="mini-charts-grid">
                         <div class="m-chart">
                             <div class="mc-head"><span>ЗЕМЛЕТРУСИ</span> <span class="mc-time">24 години</span></div>
-                            <div class="mc-val c-red" id="ch-quakes-val">0</div>
-                            <div class="mc-sub">активних</div>
-                            <div class="canvas-wrap"><canvas id="chart-quakes"></canvas></div>
+                            <div class="mc-val c-red" id="ch-quakes-val">--</div>
+                            <div class="mc-sub">активних (M4.5+)</div>
+                            <div class="canvas-wrap"><canvas id="chart-quakes" width="300" height="30"></canvas></div>
                         </div>
                         <div class="m-chart">
-                            <div class="mc-head"><span>ЛІСОВІ ПОЖЕЖІ</span> <span class="mc-time">24 години</span></div>
-                            <div class="mc-val c-orange" id="ch-fires-val">0</div>
-                            <div class="mc-sub">активних</div>
-                            <div class="canvas-wrap"><canvas id="chart-fires"></canvas></div>
+                            <div class="mc-head"><span>ПРИРОДНІ ПОДІЇ</span> <span class="mc-time">EONET</span></div>
+                            <div class="mc-val c-orange" id="ch-fires-val">--</div>
+                            <div class="mc-sub">відкритих подій</div>
+                            <div class="canvas-wrap"><canvas id="chart-fires" width="300" height="30"></canvas></div>
                         </div>
                         <div class="m-chart">
-                            <div class="mc-head"><span>AQI (СЕРЕДНЄ)</span> <span class="mc-time">24 години</span></div>
-                            <div class="mc-val c-green" id="ch-aqi-val">67</div>
-                            <div class="mc-sub">помірний</div>
-                            <div class="canvas-wrap"><canvas id="chart-aqi"></canvas></div>
+                            <div class="mc-head"><span>AQI (СЕРЕДНЄ)</span> <span class="mc-time">PM2.5</span></div>
+                            <div class="mc-val c-green" id="ch-aqi-val">--</div>
+                            <div class="mc-sub" id="ch-aqi-sub">--</div>
+                            <div class="canvas-wrap"><canvas id="chart-aqi" width="300" height="30"></canvas></div>
                         </div>
                         <div class="m-chart">
                             <div class="mc-head"><span>СОНЯЧНА АКТИВНІСТЬ</span></div>
-                            <div class="mc-val c-yellow">M1.2</div>
-                            <div class="mc-sub">помірна</div>
-                            <div class="canvas-wrap"><canvas id="chart-solar"></canvas></div>
-                        </div>
-                        <div class="m-chart">
-                            <div class="mc-head"><span>ГЛОБ. ТЕМПЕРАТУРА</span></div>
-                            <div class="mc-val c-red">+0.62°C</div>
-                            <div class="mc-sub">вище норми</div>
-                            <div class="canvas-wrap"><canvas id="chart-temp"></canvas></div>
+                            <div class="mc-val c-yellow" id="ch-solar-val">--</div>
+                            <div class="mc-sub" id="ch-solar-sub">--</div>
+                            <div class="canvas-wrap"><canvas id="chart-solar" width="300" height="30"></canvas></div>
                         </div>
                         <div class="m-chart">
                             <div class="mc-head"><span>CO2 КОНЦЕНТРАЦІЯ</span></div>
-                            <div class="mc-val c-green">421.3 ppm</div>
-                            <div class="mc-sub">підвищена</div>
-                            <div class="canvas-wrap"><canvas id="chart-co2"></canvas></div>
+                            <div class="mc-val c-green" id="ch-co2-val">--</div>
+                            <div class="mc-sub">ppm (Mauna Loa)</div>
+                            <div class="canvas-wrap"><canvas id="chart-co2" width="300" height="30"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>ШТУРМИ / ТЕЧІЇ</span></div>
+                            <div class="mc-val c-cyan" id="ch-storm-val">--</div>
+                            <div class="mc-sub" id="ch-storm-sub">--</div>
+                            <div class="canvas-wrap"><canvas id="chart-storm" width="300" height="30"></canvas></div>
                         </div>
                     </div>
                 </section>
-                
+
+                <!-- CLIMATE MONITORING -->
                 <section class="widget bot-widget">
                     <div class="widget-header">CLIMATE MONITORING</div>
                     <div class="climate-grid">
                         <div class="cl-item">
                             <div class="cl-lbl">CO2</div>
-                            <div class="cl-icon"><i data-lucide="cloud" class="c-green"></i></div>
-                            <div class="cl-val">421.3</div>
-                            <div class="cl-unit">ppm</div>
+                            <div class="cl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg></div>
+                            <div class="cl-val" id="cl-co2">--</div>
+                            <div class="cl-unit" id="cl-co2-unit">ppm</div>
                         </div>
                         <div class="cl-item">
                             <div class="cl-lbl">CH4</div>
-                            <div class="cl-icon"><i data-lucide="flask-conical" class="c-green"></i></div>
-                            <div class="cl-val">1897</div>
+                            <div class="cl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"></path><path d="M6.453 15h11.094"></path><path d="M8.5 2h7"></path></svg></div>
+                            <div class="cl-val" id="cl-ch4">--</div>
                             <div class="cl-unit">ppb</div>
                         </div>
                         <div class="cl-item">
-                            <div class="cl-lbl">Глоб. темп.</div>
-                            <div class="cl-icon"><i data-lucide="thermometer" class="c-red"></i></div>
-                            <div class="cl-val c-red">+0.62°C</div>
-                            <div class="cl-unit">вище норми</div>
+                            <div class="cl-lbl">Kp індекс</div>
+                            <div class="cl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg></div>
+                            <div class="cl-val" id="cl-kp">--</div>
+                            <div class="cl-unit" id="cl-kp-unit">--</div>
                         </div>
                         <div class="cl-item">
-                            <div class="cl-lbl">Рівень моря</div>
-                            <div class="cl-icon"><i data-lucide="waves" class="c-blue"></i></div>
-                            <div class="cl-val c-blue">+3.2 mm</div>
-                            <div class="cl-unit">за 7 дн</div>
+                            <div class="cl-lbl">Соняч. вітер</div>
+                            <div class="cl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path><path d="M9.8 4.4A2 2 0 1 1 11 8H2"></path></svg></div>
+                            <div class="cl-val" id="cl-wind">--</div>
+                            <div class="cl-unit">km/s</div>
                         </div>
                     </div>
                 </section>
 
+                <!-- INFRASTRUCTURE MONITORING -->
                 <section class="widget bot-widget">
-                    <div class="widget-header">INFRASTRUCTURE MONITORING</div>
-                    <div class="infra-grid">
-                        <div class="in-item"><i data-lucide="wifi" class="c-green"></i> <div><span>Інтернет</span><br><b class="c-green">Стабільний</b></div></div>
-                        <div class="in-item"><i data-lucide="satellite" class="c-green"></i> <div><span>GPS</span><br><b class="c-green">Норма</b></div></div>
-                        <div class="in-item"><i data-lucide="zap" class="c-green"></i> <div><span>Мережі</span><br><b class="c-green">Стабільно</b></div></div>
-                        <div class="in-item"><i data-lucide="plane" class="c-green"></i> <div><span>Авіація</span><br><b class="c-green">Норма</b></div></div>
-                        <div class="in-item"><i data-lucide="server" class="c-red"></i> <div><span>BGP</span><br><b class="c-red">2 Alert</b></div></div>
+                    <div class="widget-header">API CONNECTIVITY</div>
+                    <div class="infra-grid" id="infra-grid">
+                        <div class="in-item" id="infra-usgs"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg> <div><span>USGS Earthquakes</span><br><b id="infra-usgs-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-noaa"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg> <div><span>NOAA Space</span><br><b id="infra-noaa-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-eonet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg> <div><span>NASA EONET</span><br><b id="infra-eonet-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-meteo"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg> <div><span>Open-Meteo</span><br><b id="infra-meteo-status" style="color:#666">Перевірка...</b></div></div>
+                        <div class="in-item" id="infra-noaa-gml"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"></path></svg> <div><span>NOAA GML (CO2)</span><br><b id="infra-noaa-gml-status" style="color:#666">Перевірка...</b></div></div>
                     </div>
                 </section>
 
+                <!-- SYSTEM -->
                 <section class="widget bot-widget sys-widget">
                     <div class="widget-header">СИСТЕМА</div>
                     <div class="sys-list">
-                        <div class="sys-row"><span>Статус</span> <b class="c-green">АКТИВНА</b></div>
-                        <div class="sys-row"><span>Оновлення даних</span> <b id="sys-time">17:58:38</b></div>
-                        <div class="sys-row"><span>API з'єднань</span> <b>112 / 120</b></div>
-                        <div class="sys-row"><span>Онлайн сенсорів</span> <b class="c-green">98%</b></div>
+                        <div class="sys-row"><span>Статус</span> <b id="sys-status" style="color:#39ff14">АКТИВНА</b></div>
+                        <div class="sys-row"><span>Оновлення даних</span> <b id="sys-time">--:--:--</b></div>
+                        <div class="sys-row"><span>API з'єднань</span> <b id="sys-apis">0 / 0</b></div>
+                        <div class="sys-row"><span>Наступне оновлення</span> <b id="sys-next">--</b></div>
                     </div>
                 </section>
-
             </aside>
 
-            <!-- CENTER PANEL (Map & Timeline) -->
+            <!-- CENTER PANEL -->
             <main class="panel center-panel">
-                <!-- Map Controls -->
                 <div class="map-tabs">
                     <button class="tab-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">ЗЕМЛЕТРУСИ</button>
                     <button class="tab-btn" id="btn-fires" onclick="toggleLayer('fires')">ПОЖЕЖІ</button>
+                    <button class="tab-btn" id="btn-volcanoes" onclick="toggleLayer('volcanoes')">ВУЛКАНИ</button>
+                    <button class="tab-btn" id="btn-storms" onclick="toggleLayer('storms')">ШТУРМИ</button>
+                    <button class="tab-btn" id="btn-floods" onclick="toggleLayer('floods')">ПОВЕНІ</button>
                     <button class="tab-btn" id="btn-air" onclick="toggleLayer('air')">AQI</button>
                     <button class="tab-btn" id="btn-clouds" onclick="toggleLayer('clouds')">ХМАРИ</button>
                     <button class="tab-btn" id="btn-precip" onclick="toggleLayer('precip')">ОПАДИ</button>
@@ -295,10 +264,8 @@
                     <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
                 </div>
 
-                <!-- Map -->
                 <div class="map-wrapper">
                     <div id="map"></div>
-                    <!-- Legend Overlay -->
                     <div class="map-legend">
                         <span>ЛЕГЕНДА</span>
                         <div class="legend-item"><div class="dot bg-green"></div> НИЗЬКИЙ</div>
@@ -310,28 +277,18 @@
                     </div>
                 </div>
 
-                <!-- Timeline (below map) -->
                 <div class="timeline-container">
                     <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
                     <div class="timeline-events" id="timeline-events">
-                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
-                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
-                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
-                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
-                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
-                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
+                        <div style="color:#666;padding:8px;font-size:12px;">Завантаження подій...</div>
                     </div>
                 </div>
             </main>
-
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="ecology_script.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
