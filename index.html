@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>IBONARIUM // V4.0 PRO ECOLOGY RADAR</title>
+
+    <meta name="description" content="Глобальний центр екологічного моніторингу в реальному часі.">
+    <meta name="theme-color" content="#05070a">
+    
+    <!-- External Resources -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="ecology_style.css">
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="vignette"></div>
+
+    <div class="dashboard">
+        <!-- Top Header -->
+        <header class="top-bar">
+            <div class="logo-area">
+                <h1>IBONARIUM <span class="badge">V4.0 PRO</span></h1>
+                <div class="subtitle">ADVANCED ECOLOGICAL ANALYTICS</div>
+            </div>
+            
+            <div class="header-center">
+                <div class="status-indicator">
+                    <div class="dot blinking"></div>
+                    <span>СИСТЕМА АКТИВНА</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="time-display">
+                    <span id="utc-clock">00:00:00 UTC</span>
+                    <span id="date-display">-- --- ----</span>
+                </div>
+                <button class="settings-btn">
+                    <i data-lucide="settings"></i> НАЛАШТУВАННЯ
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content (3 Columns) -->
+        <div class="main-content">
+            
+            <!-- LEFT PANEL -->
+            <aside class="panel left-panel">
+                <section class="widget">
+                    <div class="widget-header">PLANET STATUS <i data-lucide="info"></i></div>
+                    <div class="status-big">
+                        <div class="status-text green">STABLE</div>
+                        <div class="status-sub">Стан планети відносно стабільний</div>
+                        <div class="ecg-line"></div>
+                    </div>
+                </section>
+
+                <section class="widget">
+                    <div class="widget-header">EARTH PULSE <i data-lucide="info"></i></div>
+                    <div class="earth-pulse">
+                        <div class="pulse-circle">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" class="bg"></circle>
+                                <circle cx="50" cy="50" r="45" class="fg" stroke-dasharray="283" stroke-dashoffset="79"></circle>
+                            </svg>
+                            <div class="pulse-value">72<span class="small">/100</span></div>
+                        </div>
+                        <div class="pulse-info">
+                            <div class="pulse-label">MODERATE</div>
+                            <div class="pulse-trend green">+4 за 24 год ↗</div>
+                        </div>
+                    </div>
+                    <div class="widget-footer">Індекс розраховується з 24 ключових показників планети та космосу</div>
+                </section>
+
+                <section class="widget">
+                    <div class="widget-header">ACTIVE EVENTS <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <ul class="event-list">
+                        <li><i data-lucide="activity" class="c-red"></i> <span>Землетруси</span> <span class="val c-red" id="active-quakes">0 активних</span></li>
+                        <li><i data-lucide="flame" class="c-orange"></i> <span>Лісові пожежі</span> <span class="val c-orange" id="active-fires">0 активних</span></li>
+                        <li><i data-lucide="cloud-lightning" class="c-cyan"></i> <span>Штормі</span> <span class="val c-cyan">12 активних</span></li>
+                        <li><i data-lucide="waves" class="c-blue"></i> <span>Повені</span> <span class="val c-blue">26 активних</span></li>
+                        <li><i data-lucide="radio" class="c-yellow"></i> <span>Радіаційні загрози</span> <span class="val c-yellow">3 активних</span></li>
+                        <li><i data-lucide="mountain" class="c-orange"></i> <span>Вулканічна активність</span> <span class="val c-orange">8 активних</span></li>
+                    </ul>
+                </section>
+
+                <section class="widget">
+                    <div class="widget-header">TOP RISK REGIONS <i data-lucide="info"></i> <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <div class="risk-regions">
+                        <div class="risk-item">
+                            <div class="risk-label"><span>1 🇮🇩 Indonesia</span> <span>Вулканічна активність <b class="c-red">92%</b></span></div>
+                            <div class="risk-bar"><div class="fill bg-red" style="width:92%"></div></div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-label"><span>2 🇺🇸 California, USA</span> <span>Лісові пожежі <b class="c-orange">85%</b></span></div>
+                            <div class="risk-bar"><div class="fill bg-orange" style="width:85%"></div></div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-label"><span>3 🇮🇳 Delhi, India</span> <span>Забруднення повітря <b class="c-yellow">78%</b></span></div>
+                            <div class="risk-bar"><div class="fill bg-yellow" style="width:78%"></div></div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-label"><span>4 🇯🇵 Japan</span> <span>Сейсмічна активність <b class="c-orange">72%</b></span></div>
+                            <div class="risk-bar"><div class="fill bg-orange" style="width:72%"></div></div>
+                        </div>
+                        <div class="risk-item">
+                            <div class="risk-label"><span>5 🇷🇺 Siberia, Russia</span> <span>Лісові пожежі <b class="c-orange">68%</b></span></div>
+                            <div class="risk-bar"><div class="fill bg-orange" style="width:68%"></div></div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- CENTER PANEL -->
+            <main class="panel center-panel">
+                <!-- Timeline -->
+                <div class="timeline-container">
+                    <div class="timeline-header">LAST EVENTS TIMELINE <span class="timeline-sub">ОСТАННЯ ГОДИНА</span></div>
+                    <div class="timeline-events" id="timeline-events">
+                        <!-- Populated by JS -->
+                        <div class="t-event"><i data-lucide="activity" class="c-red"></i> <div><b>14:21</b> M6.4 Землетрус Японія</div></div>
+                        <div class="t-event"><i data-lucide="flame" class="c-orange"></i> <div><b>14:15</b> Лісова пожежа Каліфорнія</div></div>
+                        <div class="t-event"><i data-lucide="sun" class="c-yellow"></i> <div><b>13:48</b> M2.7 Сонячний спалах</div></div>
+                        <div class="t-event"><i data-lucide="wind" class="c-cyan"></i> <div><b>13:26</b> AQI 288 Делі, Індія</div></div>
+                        <div class="t-event"><i data-lucide="waves" class="c-blue"></i> <div><b>13:05</b> Повінь Пакистан</div></div>
+                        <div class="t-event"><i data-lucide="triangle-alert" class="c-red"></i> <div><b>12:58</b> Виверження Етна</div></div>
+                    </div>
+                </div>
+
+                <!-- Map Controls -->
+                <div class="map-tabs">
+                    <button class="tab-btn active" id="btn-quakes" onclick="toggleLayer('quakes')">ЗЕМЛЕТРУСИ</button>
+                    <button class="tab-btn" id="btn-fires" onclick="toggleLayer('fires')">ПОЖЕЖІ</button>
+                    <button class="tab-btn" id="btn-air" onclick="toggleLayer('air')">AQI</button>
+                    <button class="tab-btn" id="btn-temp" onclick="toggleLayer('temp')">ТЕМПЕРАТУРА</button>
+                    <button class="tab-btn" id="btn-ozone" onclick="toggleLayer('ozone')">CO2/OZONE</button>
+                    <button class="tab-btn" id="btn-rad" onclick="toggleLayer('rad')">РАДІАЦІЯ</button>
+                    <button class="tab-btn" id="btn-wind" onclick="toggleLayer('wind')">ВІТЕР</button>
+                    <div class="tab-spacer"></div>
+                    <button class="tab-btn icon-btn"><i data-lucide="layers"></i></button>
+                </div>
+
+                <!-- Map -->
+                <div class="map-wrapper">
+                    <div id="map"></div>
+                    <!-- Legend Overlay -->
+                    <div class="map-legend">
+                        <span>ЛЕГЕНДА</span>
+                        <div class="legend-item"><div class="dot bg-green"></div> НИЗЬКИЙ</div>
+                        <div class="legend-item"><div class="dot bg-yellow"></div> ПОМІРНИЙ</div>
+                        <div class="legend-item"><div class="dot bg-orange"></div> ВИСОКИЙ</div>
+                        <div class="legend-item"><div class="dot bg-red"></div> КРИТИЧНИЙ</div>
+                        <div class="legend-spacer"></div>
+                        <div class="legend-item"><div class="dot blinking bg-green"></div> ДАНІ В РЕАЛЬНОМУ ЧАСІ</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- RIGHT PANEL -->
+            <aside class="panel right-panel">
+                <section class="widget">
+                    <div class="widget-header">SPACE WEATHER <i data-lucide="info"></i> <a href="#" class="detail-link">ДЕТАЛЬНІШЕ ></a></div>
+                    <div class="space-grid" id="space-grid">
+                        <div class="space-item">
+                            <i data-lucide="globe" class="c-yellow"></i>
+                            <div class="sp-data">
+                                <div class="sp-lbl">Kp Index</div>
+                                <div class="sp-val" id="sw-kp">3.2</div>
+                                <div class="sp-stat c-yellow">Помірний</div>
+                            </div>
+                        </div>
+                        <div class="space-item">
+                            <i data-lucide="magnet" class="c-cyan"></i>
+                            <div class="sp-data">
+                                <div class="sp-lbl">Dst Index</div>
+                                <div class="sp-val" id="sw-dst">-18 nT</div>
+                                <div class="sp-stat c-green">Стабільний</div>
+                            </div>
+                        </div>
+                        <div class="space-item">
+                            <i data-lucide="sun" class="c-orange"></i>
+                            <div class="sp-data">
+                                <div class="sp-lbl">X-Ray Flux</div>
+                                <div class="sp-val" id="sw-xray">M1.2</div>
+                                <div class="sp-stat c-orange">Підвищений</div>
+                            </div>
+                        </div>
+                        <div class="space-item">
+                            <i data-lucide="wind" class="c-cyan"></i>
+                            <div class="sp-data">
+                                <div class="sp-lbl">Сонячний вітер</div>
+                                <div class="sp-val" id="sw-wind">412 km/s</div>
+                                <div class="sp-stat c-green">Норма</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="widget">
+                    <div class="widget-header">PLANET SUMMARY (AI) <i data-lucide="info"></i> <span class="update-time">ОНОВЛЕНО 17:58</span></div>
+                    <div class="ai-summary">
+                        <p>Стан планети відносно стабільний.</p>
+                        <p>Основні ризики сьогодні:</p>
+                        <ul>
+                            <li>Зростання лісових пожеж у Сибіру та Канаді.</li>
+                            <li>Високий рівень забруднення повітря в Індії.</li>
+                            <li>За останні 24 години зафіксовано 2 землетруси магнітудою понад M5.</li>
+                            <li>Сонячна активність помірна, геомагнітна обстановка спокійна.</li>
+                            <li>Рівень глобальної температури вище норми на 0.62°C.</li>
+                        </ul>
+                        <button class="action-btn">ПОВНИЙ АНАЛІЗ <i data-lucide="external-link"></i></button>
+                    </div>
+                </section>
+
+                <section class="widget">
+                    <div class="widget-header">PREDICTION (НАСТУПНІ 24 ГОДИНИ) <i data-lucide="info"></i></div>
+                    <ul class="prediction-list">
+                        <li>
+                            <div class="p-left"><i data-lucide="flame" class="c-red"></i> Ризик лісових пожеж</div>
+                            <div class="p-right c-red">ВИСОКИЙ ↗</div>
+                        </li>
+                        <li>
+                            <div class="p-left"><i data-lucide="activity" class="c-orange"></i> Ймовірність землетрусів</div>
+                            <div class="p-right c-orange">СЕРЕДНЯ —</div>
+                        </li>
+                        <li>
+                            <div class="p-left"><i data-lucide="sun" class="c-green"></i> Сонячна буря</div>
+                            <div class="p-right c-green">НИЗЬКА ↓</div>
+                        </li>
+                        <li>
+                            <div class="p-left"><i data-lucide="waves" class="c-orange"></i> Ризик повеней</div>
+                            <div class="p-right c-orange">СЕРЕДНІЙ ↗</div>
+                        </li>
+                        <li>
+                            <div class="p-left"><i data-lucide="cloud-lightning" class="c-yellow"></i> Штормова активність</div>
+                            <div class="p-right c-yellow">СЕРЕДНЯ —</div>
+                        </li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+
+        <!-- Bottom Panel -->
+        <footer class="bottom-panel">
+            <div class="bottom-row">
+                <!-- Live Feeds & Trends -->
+                <div class="panel feeds-panel">
+                    <div class="widget-header">LIVE FEEDS & TRENDS <i data-lucide="info"></i></div>
+                    <div class="mini-charts-grid">
+                        <div class="m-chart">
+                            <div class="mc-head"><span>ЗЕМЛЕТРУСИ</span> <span class="mc-time">24 години</span></div>
+                            <div class="mc-val c-red" id="ch-quakes-val">0</div>
+                            <div class="mc-sub">активних</div>
+                            <div class="canvas-wrap"><canvas id="chart-quakes"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>ЛІСОВІ ПОЖЕЖІ</span> <span class="mc-time">24 години</span></div>
+                            <div class="mc-val c-orange" id="ch-fires-val">0</div>
+                            <div class="mc-sub">активних</div>
+                            <div class="canvas-wrap"><canvas id="chart-fires"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>AQI (СЕРЕДНЄ)</span> <span class="mc-time">24 години</span></div>
+                            <div class="mc-val c-green" id="ch-aqi-val">67</div>
+                            <div class="mc-sub">помірний</div>
+                            <div class="canvas-wrap"><canvas id="chart-aqi"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>СОНЯЧНА АКТИВНІСТЬ</span> <span class="mc-time">72 години</span></div>
+                            <div class="mc-val c-yellow">M1.2</div>
+                            <div class="mc-sub">помірна</div>
+                            <div class="canvas-wrap"><canvas id="chart-solar"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>ГЛОБ. ТЕМПЕРАТУРА</span> <span class="mc-time">30 днів</span></div>
+                            <div class="mc-val c-red">+0.62°C</div>
+                            <div class="mc-sub">вище норми</div>
+                            <div class="canvas-wrap"><canvas id="chart-temp"></canvas></div>
+                        </div>
+                        <div class="m-chart">
+                            <div class="mc-head"><span>CO2 КОНЦЕНТРАЦІЯ</span> <span class="mc-time">рік</span></div>
+                            <div class="mc-val c-green">421.3 ppm</div>
+                            <div class="mc-sub">підвищена</div>
+                            <div class="canvas-wrap"><canvas id="chart-co2"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-row split">
+                <div class="panel bot-widget">
+                    <div class="widget-header">CLIMATE MONITORING <i data-lucide="info"></i></div>
+                    <div class="climate-grid">
+                        <div class="cl-item">
+                            <div class="cl-lbl">CO2</div>
+                            <div class="cl-icon"><i data-lucide="cloud" class="c-green"></i></div>
+                            <div class="cl-val">421.3</div>
+                            <div class="cl-unit">ppm</div>
+                        </div>
+                        <div class="cl-item">
+                            <div class="cl-lbl">CH4</div>
+                            <div class="cl-icon"><i data-lucide="flask-conical" class="c-green"></i></div>
+                            <div class="cl-val">1897</div>
+                            <div class="cl-unit">ppb</div>
+                        </div>
+                        <div class="cl-item">
+                            <div class="cl-lbl">Глоб. темп.</div>
+                            <div class="cl-icon"><i data-lucide="thermometer" class="c-red"></i></div>
+                            <div class="cl-val c-red">+0.62°C</div>
+                            <div class="cl-unit">вище норми</div>
+                        </div>
+                        <div class="cl-item">
+                            <div class="cl-lbl">Морський лід</div>
+                            <div class="cl-icon"><i data-lucide="snowflake" class="c-cyan"></i></div>
+                            <div class="cl-val c-cyan">-12.4%</div>
+                            <div class="cl-unit">від норми</div>
+                        </div>
+                        <div class="cl-item">
+                            <div class="cl-lbl">Рівень моря</div>
+                            <div class="cl-icon"><i data-lucide="waves" class="c-blue"></i></div>
+                            <div class="cl-val c-blue">+3.2 mm</div>
+                            <div class="cl-unit">за 7 днів</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel bot-widget">
+                    <div class="widget-header">INFRASTRUCTURE MONITORING <i data-lucide="info"></i></div>
+                    <div class="infra-grid">
+                        <div class="in-item"><i data-lucide="wifi" class="c-green"></i> <div><span>Інтернет</span><br><b class="c-green">Стабільний</b></div></div>
+                        <div class="in-item"><i data-lucide="satellite" class="c-green"></i> <div><span>GPS</span><br><b class="c-green">Норма</b></div></div>
+                        <div class="in-item"><i data-lucide="zap" class="c-green"></i> <div><span>Енергомережі</span><br><b class="c-green">Стабільно</b></div></div>
+                        <div class="in-item"><i data-lucide="plane" class="c-green"></i> <div><span>Авіація</span><br><b class="c-green">Норма</b></div></div>
+                        <div class="in-item"><i data-lucide="server" class="c-red"></i> <div><span>BGP</span><br><b class="c-red">2 попередження</b></div></div>
+                    </div>
+                </div>
+
+                <div class="panel bot-widget">
+                    <div class="widget-header">DATA SOURCES (100+ API)</div>
+                    <div class="sources-logos">
+                        <span>USGS</span> <span>NASA</span> <span>NOAA</span> <span>ESA</span> <span>Copernicus</span> <span>ECMWF</span> <span>OpenAQ</span> <span>FIRMS</span> <span>Windy</span>
+                    </div>
+                    <div class="sources-more">AND 80+ MORE</div>
+                </div>
+
+                <div class="panel bot-widget sys-widget">
+                    <div class="widget-header">СИСТЕМА</div>
+                    <div class="sys-list">
+                        <div class="sys-row"><span>Статус</span> <b class="c-green">АКТИВНА</b></div>
+                        <div class="sys-row"><span>Оновлення даних</span> <b id="sys-time">17:58:38</b></div>
+                        <div class="sys-row"><span>API з'єднань</span> <b>112 / 120</b></div>
+                        <div class="sys-row"><span>Онлайн сенсорів</span> <b class="c-green">98%</b></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="ecology_script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
